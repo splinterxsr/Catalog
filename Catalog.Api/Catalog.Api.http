@@ -1,6 +1,44 @@
-@Catalog.Api_HostAddress = https://localhost:32774
+@Catalog.Api_HostAddress = https://localhost:44339
 
-GET {{Catalog.Api_HostAddress}}/weatherforecast/
+### Create a new game
+POST {{Catalog.Api_HostAddress}}/game/
+Content-Type: application/json
 Accept: application/json
 
+{
+  "name": "Resident Evil X",
+  "description": "A new chapter in the Resident Evil series, combining survival horror with intense action.",
+  "genre": "Action",
+  "release": "2026-12-01",
+  "price": 79.99
+}
+###
+
+### Get all games
+GET {{Catalog.Api_HostAddress}}/game/
+Accept: application/json
+###
+
+### Get a game by id
+GET {{Catalog.Api_HostAddress}}/game/{id}
+Accept: application/json
+###
+
+### Update a game
+PUT {{Catalog.Api_HostAddress}}/game/{id}
+Content-Type: application/json
+Accept: application/json
+
+{
+  "name": "Resident Evil X - Remastered",
+  "description": "Remastered edition with improved visuals and extra content.",
+  "genre": "Action",
+  "release": "2026-12-01T00:00:00Z",
+  "price": 69.99
+}
+###
+
+### Delete a game
+DELETE {{Catalog.Api_HostAddress}}/game/{id}
+Accept: application/json
 ###

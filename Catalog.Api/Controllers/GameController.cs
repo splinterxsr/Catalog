@@ -63,11 +63,21 @@ namespace Catalog.Api.Controllers
         }
 
         [HttpPut]
-        public async Task<IActionResult> Put([FromBody] GameUpdate update, CancellationToken cancellationToken)
+        [Route("{id}")]
+        public async Task<IActionResult> Put(int id, [FromBody] GameUpdate update, CancellationToken cancellationToken)
         {
             if (ModelState.IsValid is false)
             {
                 return BadRequest(update);
+            }
+
+            try
+            {
+                await _service.UpdateAsync(id, update.Name, update.Description, update.Genre, update.Release, update.Price, cancellationToken);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
             }
 
             return Ok(update);
@@ -77,6 +87,15 @@ namespace Catalog.Api.Controllers
         [Route("{id}")]
         public async Task<IActionResult> Delete(int id, CancellationToken cancellationToken)
         {
+            try
+            {
+                await _service.DeleteAsync(id, cancellationToken);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+
             return Ok();
         }
     }

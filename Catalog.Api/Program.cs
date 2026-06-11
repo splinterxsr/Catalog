@@ -4,28 +4,58 @@ using Catalog.Api.Infrastructure.Context;
 using Catalog.Api.Infrastructure.Repositories;
 using Catalog.Api.Infrastructure.Services;
 using Catalog.Api.Profiles;
+using MassTransit;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
+using System.Text.Json;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-
 builder.Services.AddControllers();
-
-#region Dependency Injection
 
 builder.Services.AddSingleton<Mapper>();
 
+var postgreUser = Environment.GetEnvironmentVariable("POSTGRES_USER") ?? "catalog_user";
+var postgrePassword = Environment.GetEnvironmentVariable("POSTGRES_PASSWORD") ?? "catalog_pass";
+var postgreDb = Environment.GetEnvironmentVariable("POSTGRES_DB") ?? "catalog_db";
+var postgreHost = Environment.GetEnvironmentVariable("POSTGRES_HOST") ?? "localhost";
+
+var connectionString = $"Host={postgreHost};Port=5432;Database={postgreDb};Username={postgreUser};Password={postgrePassword}";
+
 builder.Services.AddDbContext<AppDbContext>(options =>
 {
-    var conn = "Host=localhost;Port=5432;Database=catalog_db;Username=catalog_user;Password=catalog_pass";
-
-    if (!string.IsNullOrWhiteSpace(conn))
+    if (!string.IsNullOrWhiteSpace(connectionString))
     {
-        options.UseNpgsql(conn);
+        options.UseNpgsql(connectionString);
     }
-},ServiceLifetime.Scoped);
+}, ServiceLifetime.Scoped);
 
+builder.Services.AddMassTransit(x =>
+{
+    var host = Environment.GetEnvironmentVariable("RABBITMQ_HOST") ?? "rabbitmq-service";
+    var user = Environment.GetEnvironmentVariable("RABBITMQ_DEFAULT_USER") ?? "guest";
+    var password = Environment.GetEnvironmentVariable("RABBITMQ_DEFAULT_PASS") ?? "guest";
+
+    x.UsingRabbitMq((context, cfg) =>
+    {
+        cfg.Host(host, "/", h =>
+        {
+            h.Username(user);
+            h.Password(password);
+        });
+
+        cfg.ConfigureEndpoints(context);
+    });
+});
+
+builder.Services.AddHealthChecks()
+    .AddCheck("Self", () => HealthCheckResult.Healthy(), tags: new[] { "live" })
+    .AddNpgSql(connectionString, name: "postgres-sql", tags: new[] { "ready" });
+
+#region Dependency Injection
+
+builder.Services.AddTransient<ICatalogService, CatalogService>();
 builder.Services.AddTransient<IGameService, GameService>();
 
 builder.Services.AddTransient<IGameRepository, GameRepository>();
@@ -43,6 +73,34 @@ if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
 }
+
+app.MapHealthChecks("/health/live", new HealthCheckOptions
+{
+    Predicate = check => check.Tags.Contains("live")
+});
+
+app.MapHealthChecks("/health/ready", new HealthCheckOptions
+{
+    Predicate = check => check.Tags.Contains("ready"),
+    ResponseWriter = async (context, report) =>
+    {
+        context.Response.ContentType = "application/json";
+
+        var response = new
+        {
+            status = report.Status.ToString(),
+            checks = report.Entries.Select(entry => new
+            {
+                name = entry.Key,
+                status = entry.Value.Status.ToString(),
+                description = entry.Value.Description,
+                error = entry.Value.Exception?.Message
+            })
+        };
+
+        await context.Response.WriteAsync(JsonSerializer.Serialize(response, new JsonSerializerOptions { WriteIndented = true }));
+    }
+});
 
 app.UseHttpsRedirection();
 

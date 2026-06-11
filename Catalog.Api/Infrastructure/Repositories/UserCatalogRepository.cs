@@ -1,6 +1,7 @@
 ﻿using Catalog.Api.Domain.Entities;
 using Catalog.Api.Domain.Repositories;
 using Catalog.Api.Infrastructure.Context;
+using Microsoft.EntityFrameworkCore;
 
 namespace Catalog.Api.Infrastructure.Repositories
 {
@@ -11,6 +12,11 @@ namespace Catalog.Api.Infrastructure.Repositories
         public UserCatalogRepository(AppDbContext context)
         {
             _context = context;
+        }
+
+        public async Task<UserCatalog?> GetByIdAsync(int userId, int gameId, CancellationToken cancellationToken)
+        {
+            return await _context.UsersCatalogs.FirstOrDefaultAsync(uc => uc.UserId == userId && uc.GameId == gameId, cancellationToken);
         }
 
         public async Task CreateAsync(UserCatalog userCatalog, CancellationToken cancellationToken)

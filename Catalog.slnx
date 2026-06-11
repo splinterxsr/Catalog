@@ -1,8 +1,4 @@
 <Solution>
-  <Folder Name="/Itens de Solução/">
-    <File Path="docker-compose.yml" />
-    <File Path="README.md" />
-  </Folder>
   <Project Path="Catalog.Api/Catalog.Api.csproj" />
   <Project Path="Catalog.Worker/Catalog.Worker.csproj" />
 </Solution>

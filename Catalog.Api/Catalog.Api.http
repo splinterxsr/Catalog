@@ -1,4 +1,4 @@
-@Catalog.Api_HostAddress = https://localhost:44339
+@Catalog.Api_HostAddress = http://localhost:80
 
 ### Create a new game
 POST {{Catalog.Api_HostAddress}}/game/
@@ -6,7 +6,7 @@ Content-Type: application/json
 Accept: application/json
 
 {
-  "name": "Resident Evil X",
+  "name": "Resident Evil X-2",
   "description": "A new chapter in the Resident Evil series, combining survival horror with intense action.",
   "genre": "Action",
   "release": "2026-12-01",
@@ -20,12 +20,12 @@ Accept: application/json
 ###
 
 ### Get a game by id
-GET {{Catalog.Api_HostAddress}}/game/{id}
+GET {{Catalog.Api_HostAddress}}/game/1
 Accept: application/json
 ###
 
 ### Update a game
-PUT {{Catalog.Api_HostAddress}}/game/{id}
+PUT {{Catalog.Api_HostAddress}}/game/2
 Content-Type: application/json
 Accept: application/json
 
@@ -33,12 +33,24 @@ Accept: application/json
   "name": "Resident Evil X - Remastered",
   "description": "Remastered edition with improved visuals and extra content.",
   "genre": "Action",
-  "release": "2026-12-01T00:00:00Z",
-  "price": 69.99
+  "release": "2027-01-25",
+  "price": 80.00
 }
 ###
 
 ### Delete a game
-DELETE {{Catalog.Api_HostAddress}}/game/{id}
+DELETE {{Catalog.Api_HostAddress}}/game/3
 Accept: application/json
+###
+
+### Place a order
+POST {{Catalog.Api_HostAddress}}/catalog/
+Content-Type: application/json
+Accept: application/json
+
+{
+  "userId": 1,
+  "gameId": 1,
+  "price": 79.99
+}
 ###

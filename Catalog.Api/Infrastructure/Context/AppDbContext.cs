@@ -16,11 +16,16 @@ namespace Catalog.Api.Infrastructure.Context
         {
             if (!optionsBuilder.IsConfigured)
             {
-                var conn = "Host=localhost;Port=5432;Database=catalog_db;Username=catalog_user;Password=catalog_pass";
+                var postgreUser = Environment.GetEnvironmentVariable("POSTGRES_USER") ?? "catalog_user";
+                var postgrePassword = Environment.GetEnvironmentVariable("POSTGRES_PASSWORD") ?? "catalog_pass";
+                var postgreDb = Environment.GetEnvironmentVariable("POSTGRES_DB") ?? "catalog_db";
+                var postgreHost = Environment.GetEnvironmentVariable("POSTGRES_HOST") ?? "localhost";
 
-                if (!string.IsNullOrWhiteSpace(conn))
+                var connectionString = $"Host={postgreHost};Port=5432;Database={postgreDb};Username={postgreUser};Password={postgrePassword}";
+
+                if (!string.IsNullOrWhiteSpace(connectionString))
                 {
-                    optionsBuilder.UseNpgsql(conn);
+                    optionsBuilder.UseNpgsql(connectionString);
                 }
             }
 

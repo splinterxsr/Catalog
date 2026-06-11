@@ -4,9 +4,6 @@ namespace Catalog.Api.Models
 {
     public class GameUpdate
     {
-        [Required(ErrorMessage = "The field 'Id' is mandatory.")]
-        public int Id { get; set; }
-
         [Required(ErrorMessage = "The field 'Name' is mandatory.")]
         [StringLength(50, ErrorMessage = "The field 'Name' must be a maximum of 50 characters.")]
         public required string Name { get; set; }

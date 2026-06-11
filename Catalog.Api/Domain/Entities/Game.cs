@@ -3,13 +3,16 @@
     public class Game
     {
         public int Id { get; private set; }
-        public string Name { get; set; }
-        public string Description { get; set; }
-        public string Genre { get; set; }
+        public string Name { get; private set; }
+        public string Description { get; private set; }
+        public string Genre { get; private set; }
         public DateOnly Release { get; private set; }
         public decimal Price { get; private set; }
         public DateTime LogData { get; private set; }
 
+        /// <summary>
+        /// Constructor for Mapperly mapping. It is required to have a constructor that accepts all properties of the entity for Mapperly to create instances of the entity when mapping from DTOs. This constructor should be public to allow Mapperly to access it when creating instances of the entity during the mapping process, ensuring that all necessary properties are set correctly.
+        /// </summary>
         public Game(string name, string description, string genre, DateOnly release, decimal price)
         {
             Name = name;
@@ -24,6 +27,15 @@
         /// </summary>
         protected Game()
         {
+        }
+
+        public void Update(string name, string description, string genre, DateOnly release, decimal price)
+        {
+            Name = name;
+            Description = description;
+            Genre = genre;
+            Release = release;
+            Price = price;
         }
     }
 }

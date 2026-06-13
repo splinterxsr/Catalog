@@ -20,7 +20,7 @@ Accept: application/json
 ###
 
 ### Get a game by id
-GET {{Catalog.Api_HostAddress}}/game/1
+GET {{Catalog.Api_HostAddress}}/game/{id}
 Accept: application/json
 ###
 

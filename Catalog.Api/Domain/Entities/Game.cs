@@ -3,9 +3,9 @@
     public class Game
     {
         public int Id { get; private set; }
-        public string Name { get; private set; } = null!;
-        public string Description { get; private set; } = null!;
-        public string Genre { get; private set; } = null!;
+        public string Name { get; set; }
+        public string Description { get; set; }
+        public string Genre { get; set; }
         public DateOnly Release { get; private set; }
         public decimal Price { get; private set; }
         public DateTime LogData { get; private set; }

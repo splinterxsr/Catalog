@@ -4,6 +4,8 @@ using Catalog.Api.Infrastructure.Context;
 using Catalog.Api.Infrastructure.Repositories;
 using Catalog.Api.Infrastructure.Services;
 using Catalog.Api.Profiles;
+using MassTransit;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using System.Text.Json;
@@ -11,8 +13,6 @@ using System.Text.Json;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
-
-#region Dependency Injection
 
 builder.Services.AddSingleton<Mapper>();
 

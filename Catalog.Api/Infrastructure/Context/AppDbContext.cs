@@ -34,10 +34,8 @@ namespace Catalog.Api.Infrastructure.Context
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            // usar schema público por padrão no PostgreSQL
             modelBuilder.HasDefaultSchema("public");
 
-            // aplica todas as configurações de IEntityTypeConfiguration no assembly
             modelBuilder.ApplyConfigurationsFromAssembly(typeof(AppDbContext).Assembly);
 
             base.OnModelCreating(modelBuilder);

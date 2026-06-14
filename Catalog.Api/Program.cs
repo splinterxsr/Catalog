@@ -1,5 +1,6 @@
 using Catalog.Api.Domain.Repositories;
 using Catalog.Api.Domain.Services;
+using Catalog.Api.Extensions;
 using Catalog.Api.Infrastructure.Context;
 using Catalog.Api.Infrastructure.Repositories;
 using Catalog.Api.Infrastructure.Services;
@@ -33,7 +34,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 
 builder.Services.AddMassTransit(x =>
 {
-    var host = Environment.GetEnvironmentVariable("RABBITMQ_HOST") ?? "rabbitmq-service";
+    var host = Environment.GetEnvironmentVariable("RABBITMQ_HOST") ?? "localhost";
     var user = Environment.GetEnvironmentVariable("RABBITMQ_DEFAULT_USER") ?? "guest";
     var password = Environment.GetEnvironmentVariable("RABBITMQ_DEFAULT_PASS") ?? "guest";
 
@@ -107,5 +108,7 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.ApplyMigrations();
 
 app.Run();

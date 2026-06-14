@@ -6,7 +6,7 @@ Content-Type: application/json
 Accept: application/json
 
 {
-  "name": "Resident Evil X-2",
+  "name": "Resident Evil X",
   "description": "A new chapter in the Resident Evil series, combining survival horror with intense action.",
   "genre": "Action",
   "release": "2026-12-01",
@@ -20,7 +20,7 @@ Accept: application/json
 ###
 
 ### Get a game by id
-GET {{Catalog.Api_HostAddress}}/game/{id}
+GET {{Catalog.Api_HostAddress}}/game/1
 Accept: application/json
 ###
 

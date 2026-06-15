@@ -1,4 +1,4 @@
-﻿namespace Catalog.Worker.Contracts
+﻿namespace Catalog.Worker.Domain.Contracts
 {
     public record PaymentProcessed
     {

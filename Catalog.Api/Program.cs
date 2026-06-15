@@ -17,6 +17,8 @@ builder.Services.AddControllers();
 
 builder.Services.AddSingleton<Mapper>();
 
+#region DB Postgres
+
 var postgreUser = Environment.GetEnvironmentVariable("POSTGRES_USER") ?? "catalog_user";
 var postgrePassword = Environment.GetEnvironmentVariable("POSTGRES_PASSWORD") ?? "catalog_pass";
 var postgreDb = Environment.GetEnvironmentVariable("POSTGRES_DB") ?? "catalog_db";
@@ -31,6 +33,14 @@ builder.Services.AddDbContext<AppDbContext>(options =>
         options.UseNpgsql(connectionString);
     }
 }, ServiceLifetime.Scoped);
+
+builder.Services.AddHealthChecks()
+    .AddCheck("Self", () => HealthCheckResult.Healthy(), tags: new[] { "live" })
+    .AddNpgSql(connectionString, name: "postgres-sql", tags: new[] { "ready" });
+
+#endregion
+
+#region Masstransit (RabbitMQ)
 
 builder.Services.AddMassTransit(x =>
 {
@@ -50,9 +60,7 @@ builder.Services.AddMassTransit(x =>
     });
 });
 
-builder.Services.AddHealthChecks()
-    .AddCheck("Self", () => HealthCheckResult.Healthy(), tags: new[] { "live" })
-    .AddNpgSql(connectionString, name: "postgres-sql", tags: new[] { "ready" });
+#endregion
 
 #region Dependency Injection
 
@@ -74,6 +82,8 @@ if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
 }
+
+#region Health Checks
 
 app.MapHealthChecks("/health/live", new HealthCheckOptions
 {
@@ -102,6 +112,8 @@ app.MapHealthChecks("/health/ready", new HealthCheckOptions
         await context.Response.WriteAsync(JsonSerializer.Serialize(response, new JsonSerializerOptions { WriteIndented = true }));
     }
 });
+
+#endregion
 
 app.UseHttpsRedirection();
 

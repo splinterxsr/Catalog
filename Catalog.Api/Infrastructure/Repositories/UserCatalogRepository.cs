@@ -18,11 +18,5 @@ namespace Catalog.Api.Infrastructure.Repositories
         {
             return await _context.UsersCatalogs.FirstOrDefaultAsync(uc => uc.UserId == userId && uc.GameId == gameId, cancellationToken);
         }
-
-        public async Task CreateAsync(UserCatalog userCatalog, CancellationToken cancellationToken)
-        {
-            _context.UsersCatalogs.Add(userCatalog);
-            await _context.SaveChangesAsync(cancellationToken);
-        }
     }
 }

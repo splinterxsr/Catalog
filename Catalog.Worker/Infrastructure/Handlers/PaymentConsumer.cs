@@ -1,15 +1,19 @@
 ﻿using MassTransit;
 using Microsoft.Extensions.Logging;
-using Catalog.Worker.Contracts;
+using Catalog.Worker.Domain.Contracts;
+using Catalog.Worker.Domain.Repositories;
+using Catalog.Worker.Domain.Entities;
 
-namespace Catalog.Worker.Handlers
+namespace Catalog.Worker.Infrastructure.Handlers
 {
     public class PaymentConsumer : IConsumer<PaymentProcessed>
     {
+        private readonly IUserCatalogRepository _userCatalogRepository;
         private readonly ILogger<PaymentConsumer> _logger;
 
-        public PaymentConsumer(ILogger<PaymentConsumer> logger)
+        public PaymentConsumer(IUserCatalogRepository userCatalogRepository, ILogger<PaymentConsumer> logger)
         {
+            _userCatalogRepository = userCatalogRepository;
             _logger = logger;
         }
 
@@ -27,6 +31,19 @@ namespace Catalog.Worker.Handlers
             {
                 _logger.LogInformation("✅ Payment approved succesfully!");
                 _logger.LogInformation("---");
+
+                _logger.LogInformation("Adding game to user catalog...");
+
+                try
+                {
+                    var catalog = new UserCatalog(order.GameId, order.UserId);
+
+                    await _userCatalogRepository.CreateAsync(catalog);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "❌ An error occurred while adding the game to the user catalog.");
+                }
             }
             else
             {

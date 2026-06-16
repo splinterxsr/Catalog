@@ -6,7 +6,7 @@ using Catalog.Worker.Domain.Entities;
 
 namespace Catalog.Worker.Infrastructure.Handlers
 {
-    public class PaymentConsumer : IConsumer<PaymentProcessed>
+    public class PaymentConsumer : IConsumer<PaymentProcessedEvent>
     {
         private readonly IUserCatalogRepository _userCatalogRepository;
         private readonly ILogger<PaymentConsumer> _logger;
@@ -17,7 +17,7 @@ namespace Catalog.Worker.Infrastructure.Handlers
             _logger = logger;
         }
 
-        public async Task Consume(ConsumeContext<PaymentProcessed> context)
+        public async Task Consume(ConsumeContext<PaymentProcessedEvent> context)
         {
             var order = context.Message;
 

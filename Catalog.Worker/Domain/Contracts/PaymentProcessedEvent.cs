@@ -1,6 +1,6 @@
 ﻿namespace Catalog.Worker.Domain.Contracts
 {
-    public record PaymentProcessed
+    public record PaymentProcessedEvent
     {
         public Guid TransactionId { get; set; }
         public int UserId { get; set; }

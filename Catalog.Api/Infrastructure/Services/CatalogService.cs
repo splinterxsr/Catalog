@@ -33,7 +33,7 @@ namespace Catalog.Api.Infrastructure.Services
 
             _logger.LogInformation("Placing a new game order. UserId: {UserId}, GameId: {GameId}, Price: {Price}", userId, gameId, price);
 
-            var gameOrder = new GameOrder(userId, gameId, price);
+            var gameOrder = new OrderPlacedEvent(userId, gameId, price);
 
             await _bus.Publish(gameOrder, cancellationToken);
         }

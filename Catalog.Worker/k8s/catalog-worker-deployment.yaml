@@ -56,6 +56,11 @@ spec:
                 configMapKeyRef:
                   name: app-config
                   key: RABBITMQ_HOST
+            - name: PAYMENT_QUEUE_NAME
+              valueFrom:
+                configMapKeyRef:
+                  name: app-config
+                  key: PAYMENT_QUEUE_NAME
           resources:
             requests:
               cpu: "100m"

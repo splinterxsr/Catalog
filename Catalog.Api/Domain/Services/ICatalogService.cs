@@ -2,6 +2,6 @@
 {
     public interface ICatalogService
     {
-        Task AddToCatalogAsync(int userId, int gameId, decimal price, CancellationToken cancellationToken = default);
+        Task AddToCatalogAsync(int userId, string userEmail, int gameId, decimal price, CancellationToken cancellationToken = default);
     }
 }

@@ -25,7 +25,7 @@ namespace Catalog.Api.Controllers
 
             try
             {
-                await _catalogService.AddToCatalogAsync(request.UserId!.Value, request.GameId!.Value, request.Price!.Value, cancellationToken);
+                await _catalogService.AddToCatalogAsync(request.UserId!.Value, request.UserEmail!, request.GameId!.Value, request.Price!.Value, cancellationToken);
             }
             catch (Exception ex)
             {

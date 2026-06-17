@@ -20,7 +20,7 @@ namespace Catalog.Api.Infrastructure.Services
             _logger = logger;
         }
 
-        public async Task AddToCatalogAsync(int userId, int gameId, decimal price, CancellationToken cancellationToken = default)
+        public async Task AddToCatalogAsync(int userId, string userEmail, int gameId, decimal price, CancellationToken cancellationToken = default)
         {
             _ = await _gameRepository.GetByIdAsync(gameId, cancellationToken) ?? throw new ArgumentException($"Game {gameId} not found.");
 
@@ -33,7 +33,7 @@ namespace Catalog.Api.Infrastructure.Services
 
             _logger.LogInformation("Placing a new game order. UserId: {UserId}, GameId: {GameId}, Price: {Price}", userId, gameId, price);
 
-            var gameOrder = new OrderPlacedEvent(userId, gameId, price);
+            var gameOrder = new OrderPlacedEvent(userId, userEmail, gameId, price);
 
             await _bus.Publish(gameOrder, cancellationToken);
         }

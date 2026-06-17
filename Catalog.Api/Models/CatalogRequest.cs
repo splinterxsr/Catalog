@@ -7,6 +7,10 @@ namespace Catalog.Api.Models
         [Required(ErrorMessage = "The field 'UserId' is mandatory.")]
         public int? UserId { get; set; }
 
+        [Required(ErrorMessage = "The field 'UserEmail' is mandatory.")]
+        [RegularExpression(@"^[^@\s]+@[^@\s]+\.[^@\s]+$", ErrorMessage = "The field 'UserEmail' must be a valid email address.")]
+        public string? UserEmail { get; set; }
+
         [Required(ErrorMessage = "The field 'GameId' is mandatory.")]
         public int? GameId { get; set; }
 

@@ -26,4 +26,8 @@
     <Folder Include="Infrastructure\Migrations\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Fcg.Contracts\Fcg.Contracts.csproj" />
+  </ItemGroup>
+
 </Project>

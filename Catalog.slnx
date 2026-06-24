@@ -1,4 +1,5 @@
 <Solution>
   <Project Path="Catalog.Api/Catalog.Api.csproj" />
   <Project Path="Catalog.Worker/Catalog.Worker.csproj" />
+  <Project Path="Fcg.Contracts/Fcg.Contracts.csproj" Id="8569ea69-97c0-4083-83cb-f51479f855e4" />
 </Solution>

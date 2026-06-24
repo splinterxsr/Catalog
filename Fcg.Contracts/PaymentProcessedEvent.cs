@@ -1,4 +1,4 @@
-﻿namespace Catalog.Worker.Domain.Contracts
+﻿namespace Fcg.Contracts
 {
     public record PaymentProcessedEvent
     {

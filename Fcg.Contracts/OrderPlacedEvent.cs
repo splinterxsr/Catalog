@@ -1,4 +1,4 @@
-namespace Catalog.Api.Domain.Contracts
+﻿namespace Fcg.Contracts
 {
     public record OrderPlacedEvent
     {

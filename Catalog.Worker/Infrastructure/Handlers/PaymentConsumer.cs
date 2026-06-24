@@ -1,8 +1,8 @@
 ﻿using MassTransit;
 using Microsoft.Extensions.Logging;
-using Catalog.Worker.Domain.Contracts;
 using Catalog.Worker.Domain.Repositories;
 using Catalog.Worker.Domain.Entities;
+using Fcg.Contracts;
 
 namespace Catalog.Worker.Infrastructure.Handlers
 {
@@ -21,7 +21,7 @@ namespace Catalog.Worker.Infrastructure.Handlers
         {
             var order = context.Message;
 
-            _logger.LogInformation("💳 Payment Processed:");
+            _logger.LogInformation("Payment Processed:");
             _logger.LogInformation("   Transaction ID: {TransactionId}", order.TransactionId);
             _logger.LogInformation("   User: {UserId}", order.UserId);
             _logger.LogInformation("   Game: {GameId}", order.GameId);
@@ -29,7 +29,7 @@ namespace Catalog.Worker.Infrastructure.Handlers
 
             if (order.Status == PaymentStatus.Approved)
             {
-                _logger.LogInformation("✅ Payment approved succesfully!");
+                _logger.LogInformation("Payment approved succesfully!");
                 _logger.LogInformation("---");
 
                 _logger.LogInformation("Adding game to user catalog...");
@@ -42,12 +42,12 @@ namespace Catalog.Worker.Infrastructure.Handlers
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError(ex, "❌ An error occurred while adding the game to the user catalog.");
+                    _logger.LogError(ex, "An error occurred while adding the game to the user catalog.");
                 }
             }
             else
             {
-                _logger.LogInformation("❌ Payment rejected!");
+                _logger.LogInformation("Payment rejected!");
                 _logger.LogInformation("---");
             }
         }

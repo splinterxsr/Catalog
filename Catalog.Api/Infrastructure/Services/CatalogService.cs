@@ -1,7 +1,7 @@
 ﻿using Catalog.Api.Domain.Repositories;
 using Catalog.Api.Domain.Services;
+using Fcg.Contracts;
 using MassTransit;
-using Catalog.Api.Domain.Contracts;
 
 namespace Catalog.Api.Infrastructure.Services
 {

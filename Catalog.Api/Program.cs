@@ -7,14 +7,19 @@ using Catalog.Api.Infrastructure.Services;
 using Catalog.Api.Profiles;
 using MassTransit;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using System.Text.Json;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddRouting(options => options.LowercaseUrls = true);
+builder.Services.AddCors();
 builder.Services.AddControllers();
-
+builder.Services.AddJwtSecurity(builder.Configuration);
+builder.Services.AddPolicies();
+builder.Services.AddAuthorization();
 builder.Services.AddSingleton<Mapper>();
 
 #region DB Postgres
@@ -75,6 +80,13 @@ builder.Services.AddTransient<IUserCatalogRepository, UserCatalogRepository>();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 
+builder.Services.Configure<ForwardedHeadersOptions>(options =>
+{
+    options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+    options.KnownIPNetworks.Clear();
+    options.KnownProxies.Clear();
+});
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -115,8 +127,9 @@ app.MapHealthChecks("/health/ready", new HealthCheckOptions
 
 #endregion
 
-app.UseHttpsRedirection();
-
+app.UseForwardedHeaders();
+app.UseCors(options => options.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();

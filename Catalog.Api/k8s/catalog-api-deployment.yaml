@@ -58,6 +58,16 @@ spec:
                 configMapKeyRef:
                   name: app-config
                   key: RABBITMQ_HOST
+            - name: JWT_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: app-secrets
+                  key: JWT_KEY
+            - name: JWT_ISSUER
+              valueFrom:
+                configMapKeyRef:
+                  name: app-config
+                  key: JWT_ISSUER
           resources:
             requests:
               cpu: "100m"

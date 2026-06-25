@@ -1,13 +1,16 @@
-﻿using Catalog.Api.Domain.Repositories;
+﻿using Catalog.Api.Domain.Enums;
+using Catalog.Api.Domain.Repositories;
 using Catalog.Api.Domain.Services;
 using Catalog.Api.Models;
 using Catalog.Api.Profiles;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Catalog.Api.Controllers
 {
     [ApiController]
     [Route("[controller]")]
+    [Authorize(Policy = nameof(Policy.Admin))]
     public class GameController : ControllerBase
     {
         private readonly IGameService _service;

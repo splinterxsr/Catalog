@@ -1,4 +1,4 @@
-# Projetos RabbitMQ com .NET 10
+# Projeto Tech Challenge FIAP - CatalogAPI e CatalogWorker
 
 Este projeto tem como objetivo executar processos relacionados ao cadastro de jogos e inclusão de jogos no catálogo do usuário.
 

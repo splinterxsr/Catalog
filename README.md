@@ -27,7 +27,13 @@ cd Catalog.Api
 dotnet run
 ```
 
-### 3. Usar a aplicação
+### 3. Executar o Catalog.Worker (Terminal 2)
+```bash
+cd Catalog.Worker
+dotnet run
+```
+
+### 4. Usar a aplicação
 1. Abra o navegador em: http://localhost:5025 (ou a porta indicada)
 2. Execute os procedimentos informados no arquivo Catalog.Api.http da solução.
 

@@ -82,6 +82,20 @@ services:
     networks:
       - apps_network
 
+  payments-worker:
+    image: anafmel/paymentsworker:latest
+    restart: always
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+      RABBITMQ_HOST: rabbitmq
+      ORDER_PLACED_QUEUE_NAME: orders-placed-queue
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - apps_network 
+
 volumes:
   rabbitmq_data:
   postgres_data:

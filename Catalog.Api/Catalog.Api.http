@@ -1,7 +1,23 @@
-@Catalog.Api_HostAddress = http://localhost:80
+@Users.API_HostAddress = http://localhost:5000
+@Catalog.Api_HostAddress = https://localhost:44339
+@authToken = {{login.response.body.$.token}}
 
-### Create a new game
+### Principais operações da API de catálogo de jogos
+### 1. Autenticar e obter token
+# @name login
+POST {{Users.API_HostAddress}}/api/users/auth
+Content-Type: application/json
+
+{
+  "email": "admin@fiapcloud.com.br",
+  "password": "admin"
+}
+
+###
+
+### 2. Cadastrar um novo jogo
 POST {{Catalog.Api_HostAddress}}/game/
+Authorization: Bearer {{authToken}}
 Content-Type: application/json
 Accept: application/json
 
@@ -14,18 +30,37 @@ Accept: application/json
 }
 ###
 
-### Get all games
+### 3. Adicionar um jogo ao catálogo de um usuário
+POST {{Catalog.Api_HostAddress}}/catalog/
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+Accept: application/json
+
+{
+  "userId": 1,
+  "gameId": 1,
+  "userEmail": "admin@fiapcloud.com.br",
+  "price": 79.99
+}
+###
+
+### Demais operações:
+
+### Obter todos os jogos
 GET {{Catalog.Api_HostAddress}}/game/
+Authorization: Bearer {{authToken}}
 Accept: application/json
 ###
 
-### Get a game by id
+### Obter um jogo específico
 GET {{Catalog.Api_HostAddress}}/game/1
+Authorization: Bearer {{authToken}}
 Accept: application/json
 ###
 
-### Update a game
-PUT {{Catalog.Api_HostAddress}}/game/2
+### Atualizar um jogo existente
+PUT {{Catalog.Api_HostAddress}}/game/1
+Authorization: Bearer {{authToken}}
 Content-Type: application/json
 Accept: application/json
 
@@ -38,19 +73,8 @@ Accept: application/json
 }
 ###
 
-### Delete a game
-DELETE {{Catalog.Api_HostAddress}}/game/3
+### Remover um jogo
+DELETE {{Catalog.Api_HostAddress}}/game/1
+Authorization: Bearer {{authToken}}
 Accept: application/json
-###
-
-### Place a order
-POST {{Catalog.Api_HostAddress}}/catalog/
-Content-Type: application/json
-Accept: application/json
-
-{
-  "userId": 1,
-  "gameId": 1,
-  "price": 79.99
-}
 ###

@@ -15,7 +15,7 @@ Este projeto tem como objetivo executar processos relacionados ao cadastro de jo
 
 ## Como executar
 
-### 1. Iniciar o RabbitMQ
+### 1. Iniciar todos os serviços (RabbitMQ, Postgres, MySQL, UsersAPI e PaymentWorker)
 ```bash
 # Docker-compose
 docker-compose up -d

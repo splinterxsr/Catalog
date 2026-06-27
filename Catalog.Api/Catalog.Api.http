@@ -1,5 +1,5 @@
 @Users.API_HostAddress = http://localhost:5000
-@Catalog.Api_HostAddress = https://localhost:44339
+@Catalog.Api_HostAddress = http://localhost:5025
 @authToken = {{login.response.body.$.token}}
 
 ### Principais operações da API de catálogo de jogos

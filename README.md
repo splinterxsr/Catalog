@@ -1,4 +1,4 @@
-# Projetos RabbitMQ com .NET 10
+# Projeto Tech Challenge FIAP - CatalogAPI e CatalogWorker
 
 Este projeto tem como objetivo executar processos relacionados ao cadastro de jogos e inclusão de jogos no catálogo do usuário.
 
@@ -15,7 +15,7 @@ Este projeto tem como objetivo executar processos relacionados ao cadastro de jo
 
 ## Como executar
 
-### 1. Iniciar o RabbitMQ
+### 1. Iniciar todos os serviços (RabbitMQ, Postgres, MySQL, UsersAPI e PaymentWorker)
 ```bash
 # Docker-compose
 docker-compose up -d
@@ -27,7 +27,13 @@ cd Catalog.Api
 dotnet run
 ```
 
-### 3. Usar a aplicação
+### 3. Executar o Catalog.Worker (Terminal 2)
+```bash
+cd Catalog.Worker
+dotnet run
+```
+
+### 4. Usar a aplicação
 1. Abra o navegador em: http://localhost:5025 (ou a porta indicada)
 2. Execute os procedimentos informados no arquivo Catalog.Api.http da solução.
 

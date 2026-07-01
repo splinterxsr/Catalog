@@ -1,6 +1,5 @@
 @Users.API_HostAddress = http://localhost:5000
-@Catalog.Api_HostAddress = http://localhost:5025
-@authToken = {{login.response.body.$.token}}
+@Catalog.Api_HostAddress = http://localhost:5010
 
 ### Principais operações da API de catálogo de jogos
 ### 1. Autenticar e obter token
@@ -17,7 +16,7 @@ Content-Type: application/json
 
 ### 2. Cadastrar um novo jogo
 POST {{Catalog.Api_HostAddress}}/game/
-Authorization: Bearer {{authToken}}
+Authorization: Bearer {{login.response.body.$.token}}
 Content-Type: application/json
 Accept: application/json
 
@@ -32,7 +31,7 @@ Accept: application/json
 
 ### 3. Adicionar um jogo ao catálogo de um usuário
 POST {{Catalog.Api_HostAddress}}/catalog/
-Authorization: Bearer {{authToken}}
+Authorization: Bearer {{login.response.body.$.token}}
 Content-Type: application/json
 Accept: application/json
 
@@ -44,23 +43,30 @@ Accept: application/json
 }
 ###
 
+### 4. Consultar jogos no catalogo do usuário
+GET {{Catalog.Api_HostAddress}}/catalog/1
+Authorization: Bearer {{login.response.body.$.token}}
+Accept: application/json
+
+###
+
 ### Demais operações:
 
 ### Obter todos os jogos
 GET {{Catalog.Api_HostAddress}}/game/
-Authorization: Bearer {{authToken}}
+Authorization: Bearer {{login.response.body.$.token}}
 Accept: application/json
 ###
 
 ### Obter um jogo específico
 GET {{Catalog.Api_HostAddress}}/game/1
-Authorization: Bearer {{authToken}}
+Authorization: Bearer {{login.response.body.$.token}}
 Accept: application/json
 ###
 
 ### Atualizar um jogo existente
 PUT {{Catalog.Api_HostAddress}}/game/1
-Authorization: Bearer {{authToken}}
+Authorization: Bearer {{login.response.body.$.token}}
 Content-Type: application/json
 Accept: application/json
 
@@ -75,6 +81,6 @@ Accept: application/json
 
 ### Remover um jogo
 DELETE {{Catalog.Api_HostAddress}}/game/1
-Authorization: Bearer {{authToken}}
+Authorization: Bearer {{login.response.body.$.token}}
 Accept: application/json
 ###

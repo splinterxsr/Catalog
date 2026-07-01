@@ -14,9 +14,7 @@ namespace Catalog.Api.Infrastructure.Repositories
             _context = context;
         }
 
-        public async Task<UserCatalog?> GetByIdAsync(int userId, int gameId, CancellationToken cancellationToken)
-        {
-            return await _context.UsersCatalogs.FirstOrDefaultAsync(uc => uc.UserId == userId && uc.GameId == gameId, cancellationToken);
-        }
+        public async Task<IEnumerable<UserCatalog>> GetByIdAsync(int userId, CancellationToken cancellationToken) => await _context.UsersCatalogs.Include(uc => uc.Game).Where(uc => uc.UserId == userId).ToListAsync(cancellationToken);
+        public async Task<UserCatalog?> GetByIdAsync(int userId, int gameId, CancellationToken cancellationToken) => await _context.UsersCatalogs.FirstOrDefaultAsync(uc => uc.UserId == userId && uc.GameId == gameId, cancellationToken);
     }
 }

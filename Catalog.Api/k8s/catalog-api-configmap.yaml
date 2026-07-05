@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: catalog-api-config
+data:
+  POSTGRES_HOST: "postgres-service"
+  RABBITMQ_HOST: "rabbitmq-service"
+  JWT_ISSUER: "FiapCloudGames"

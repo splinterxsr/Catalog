@@ -10,7 +10,7 @@ namespace Catalog.Api.Extensions
         private static readonly string jwtKey = Environment.GetEnvironmentVariable("JWT_KEY") ?? "M72gsn/ZtfvDSgyBgWNBOYf8HAHBO7FGIwiKPtwipmdMY6ZbdgrJ66yBLnXKk9O8P6fjj7G+BoE5+Ou/xfEgNQ==";
         private static readonly string[] jwtIssuer = [Environment.GetEnvironmentVariable("JWT_ISSUER") ?? "FiapCloudGames"];
 
-        public static IServiceCollection AddJwtSecurity(this IServiceCollection services, IConfiguration configuration)
+        public static IServiceCollection AddJwtSecurity(this IServiceCollection services)
         {
             services
             .AddAuthentication(options =>

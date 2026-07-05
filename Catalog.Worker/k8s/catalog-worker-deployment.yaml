@@ -24,42 +24,42 @@ spec:
             - name: POSTGRES_USER
               valueFrom:
                 secretKeyRef:
-                  name: app-secrets
+                  name: catalog-worker-secrets
                   key: POSTGRES_USER
             - name: POSTGRES_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: app-secrets
+                  name: catalog-worker-secrets
                   key: POSTGRES_PASSWORD
             - name: POSTGRES_DB
               valueFrom:
                 secretKeyRef:
-                  name: app-secrets
+                  name: catalog-worker-secrets
                   key: POSTGRES_DB
             - name: POSTGRES_HOST
               valueFrom:
                 configMapKeyRef:
-                  name: app-config
+                  name: catalog-worker-config
                   key: POSTGRES_HOST
             - name: RABBITMQ_DEFAULT_USER
               valueFrom:
                 secretKeyRef:
-                  name: app-secrets
+                  name: catalog-worker-secrets
                   key: RABBITMQ_DEFAULT_USER
             - name: RABBITMQ_DEFAULT_PASS
               valueFrom:
                 secretKeyRef:
-                  name: app-secrets
+                  name: catalog-worker-secrets
                   key: RABBITMQ_DEFAULT_PASS
             - name: RABBITMQ_HOST
               valueFrom:
                 configMapKeyRef:
-                  name: app-config
+                  name: catalog-worker-config
                   key: RABBITMQ_HOST
             - name: PAYMENT_QUEUE_NAME
               valueFrom:
                 configMapKeyRef:
-                  name: app-config
+                  name: catalog-worker-config
                   key: PAYMENT_QUEUE_NAME
           resources:
             requests:

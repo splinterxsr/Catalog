@@ -17,7 +17,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRouting(options => options.LowercaseUrls = true);
 builder.Services.AddCors();
 builder.Services.AddControllers();
-builder.Services.AddJwtSecurity(builder.Configuration);
+builder.Services.AddJwtSecurity();
 builder.Services.AddPolicies();
 builder.Services.AddAuthorization();
 builder.Services.AddSingleton<Mapper>();

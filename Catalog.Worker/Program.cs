@@ -46,7 +46,7 @@ builder.Services.AddMassTransit(x =>
             h.Password(password);
         });
 
-        var paymentQueue = Environment.GetEnvironmentVariable("PAYMENT_QUEUE_NAME") ?? "payments-queue";
+        var paymentQueue = Environment.GetEnvironmentVariable("PAYMENT_QUEUE_NAME") ?? "payments-1-queue";
 
         cfg.ReceiveEndpoint(paymentQueue, e =>
         {

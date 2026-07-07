@@ -59,7 +59,7 @@ spec:
             - name: PAYMENT_QUEUE_NAME
               valueFrom:
                 configMapKeyRef:
-                  name: app-config
+                  name: catalog-worker-config
                   key: PAYMENT_QUEUE_NAME
           resources:
             requests:

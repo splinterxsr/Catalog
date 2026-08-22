@@ -1,30 +1,42 @@
 ﻿using Catalog.Worker.Domain.Repositories;
-using Catalog.Worker.Infrastructure.Context;
 using Catalog.Worker.Infrastructure.Handlers;
 using Catalog.Worker.Infrastructure.Repositories;
 using MassTransit;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using MongoDB.Driver;
 
 var builder = Host.CreateApplicationBuilder(args);
 
-#region DB Postgres
+#region MongoDB
 
-var postgreUser = Environment.GetEnvironmentVariable("POSTGRES_USER") ?? "catalog_user";
-var postgrePassword = Environment.GetEnvironmentVariable("POSTGRES_PASSWORD") ?? "catalog_pass";
-var postgreDb = Environment.GetEnvironmentVariable("POSTGRES_DB") ?? "catalog_db";
-var postgreHost = Environment.GetEnvironmentVariable("POSTGRES_HOST") ?? "localhost";
-
-var connectionString = $"Host={postgreHost};Port=5432;Database={postgreDb};Username={postgreUser};Password={postgrePassword}";
-
-builder.Services.AddDbContext<AppDbContext>(options =>
+builder.Services.AddSingleton<IMongoClient>(sp =>
 {
-    if (!string.IsNullOrWhiteSpace(connectionString))
-    {
-        options.UseNpgsql(connectionString);
-    }
-}, ServiceLifetime.Scoped);
+    var user = Environment.GetEnvironmentVariable("MONGO_INITDB_ROOT_USERNAME") ?? "root";
+    var pass = Environment.GetEnvironmentVariable("MONGO_INITDB_ROOT_PASSWORD") ?? "r00tp@ss";
+    var host = Environment.GetEnvironmentVariable("MONGODB_HOST") ?? "127.0.0.1:27017";
+
+    var credential = MongoCredential.CreateCredential(
+        databaseName: "admin",
+        username: user,
+        password: pass
+    );
+
+    var settings = MongoClientSettings.FromConnectionString($"mongodb://{host}");
+    settings.Credential = credential;
+    settings.ServerSelectionTimeout = TimeSpan.FromSeconds(90);
+
+    return new MongoClient(settings);
+});
+
+builder.Services.AddSingleton<IMongoDatabase>(sp =>
+{
+    var database = Environment.GetEnvironmentVariable("MONGODB_DB") ?? "fcg";
+
+    var client = sp.GetRequiredService<IMongoClient>();
+
+    return client.GetDatabase(database);
+});
 
 #endregion
 
@@ -60,6 +72,7 @@ builder.Services.AddMassTransit(x =>
 #region DI
 
 builder.Services.AddTransient<IUserCatalogRepository, UserCatalogRepository>();
+builder.Services.AddTransient<IOrderRepository, OrderRepository>();
 
 #endregion
 

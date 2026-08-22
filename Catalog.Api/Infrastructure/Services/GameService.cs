@@ -4,15 +4,8 @@ using Catalog.Api.Domain.Services;
 
 namespace Catalog.Api.Infrastructure.Services
 {
-    public class GameService : IGameService
+    public class GameService(IGameRepository repository) : IGameService
     {
-        private readonly IGameRepository _repository;
-
-        public GameService(IGameRepository repository)
-        {
-            _repository = repository;
-        }
-
         public async Task AddAsync(Game game, CancellationToken cancellationToken)
         {
             var existingGame = await CheckIfExists(game, cancellationToken);
@@ -22,40 +15,40 @@ namespace Catalog.Api.Infrastructure.Services
                 throw new InvalidOperationException($"A game with the name '{game.Name}' already exists.");
             }
 
-            await _repository.CreateAsync(game, cancellationToken);
+            await repository.CreateAsync(game, cancellationToken);
         }
 
-        public async Task UpdateAsync(int id, string name, string description, string genre, DateOnly release, decimal price, CancellationToken cancellationToken)
+        public async Task UpdateAsync(string id, string name, string description, string publisher, DateTime releaseDate, decimal price, string status, CancellationToken cancellationToken)
         {
-            var existingGame = await _repository.GetByIdAsync(id, cancellationToken);
+            var existingGame = await repository.GetByIdAsync(id, cancellationToken);
 
             if (existingGame is null)
             {
                 throw new KeyNotFoundException($"Game with ID '{id}' not found.");
             }
 
-            var existingGameWithName = await _repository.GetByNameAsync(name, cancellationToken);
+            var existingGameWithName = await repository.GetByNameAsync(name, cancellationToken);
 
             if (existingGameWithName != null && existingGameWithName.Id != id)
             {
                 throw new InvalidOperationException($"A game with the name '{name}' already exists.");
             }
 
-            existingGame.Update(name, description, genre, release, price);
+            existingGame.Update(name, description, publisher, releaseDate, price, status);
 
-            await _repository.UpdateAsync(existingGame, cancellationToken);
+            await repository.UpdateAsync(existingGame, cancellationToken);
         }
 
-        public async Task DeleteAsync(int id, CancellationToken cancellationToken)
+        public async Task DeleteAsync(string id, CancellationToken cancellationToken)
         {
-            var existingGame = await _repository.GetByIdAsync(id, cancellationToken);
+            var existingGame = await repository.GetByIdAsync(id, cancellationToken);
 
             if (existingGame is null)
             {
                 throw new KeyNotFoundException($"Game with ID '{id}' not found.");
             }
 
-            await _repository.DeleteAsync(id, cancellationToken);
+            await repository.DeleteAsync(id, cancellationToken);
         }
 
         /// <summary>
@@ -63,7 +56,7 @@ namespace Catalog.Api.Infrastructure.Services
         /// </summary>
         private async Task<bool> CheckIfExists(Game game, CancellationToken cancellationToken)
         {
-            var existingGame = await _repository.GetByNameAsync(game.Name, cancellationToken);
+            var existingGame = await repository.GetByNameAsync(game.Name, cancellationToken);
 
             return existingGame != null;
         }

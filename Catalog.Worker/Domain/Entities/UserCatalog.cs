@@ -1,25 +1,28 @@
-﻿namespace Catalog.Worker.Domain.Entities
+﻿using MongoDB.Bson;
+using MongoDB.Bson.Serialization.Attributes;
+
+namespace Catalog.Worker.Domain.Entities
 {
     public class UserCatalog
     {
-        public int Id { get; private set; }
-        public int GameId { get; private set; }
-        public int UserId { get; private set; }
-        public DateOnly BuyDate { get; private set; }
-        public DateTime LogData { get; private set; }
+        [BsonId]
+        [BsonRepresentation(BsonType.ObjectId)]
+        public string Id { get; set; } = string.Empty;
 
-        /// <summary>
-        /// Constructor for Entity Framework Core. It is required to have a parameterless constructor for EF Core to create instances of the entity when querying the database. This constructor should be protected or private to prevent it from being used directly in application code, ensuring that the integrity of the entity is maintained through the use of the public constructor that requires all necessary properties to be set.
-        /// </summary>
-        protected UserCatalog()
-        {
-        }
+        [BsonRepresentation(BsonType.ObjectId)]
+        public string GameId { get; set; } = string.Empty;
 
-        public UserCatalog(int gameId, int userId)
+        [BsonRepresentation(BsonType.ObjectId)]
+        public string OrderId { get; set; } = string.Empty;
+        public int UserId { get; set; }
+        public DateTime BuyDate { get; set; }
+
+        public UserCatalog(string gameId, string orderId, int userId)
         {
             GameId = gameId;
+            OrderId = orderId;
             UserId = userId;
-            BuyDate = DateOnly.FromDateTime(DateTime.UtcNow);
+            BuyDate = DateTime.Now;
         }
     }
 }

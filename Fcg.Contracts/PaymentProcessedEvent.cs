@@ -3,8 +3,9 @@
     public record PaymentProcessedEvent
     {
         public Guid TransactionId { get; set; }
+        public string OrderId { get; set; } = string.Empty;
         public int UserId { get; set; }
-        public int GameId { get; set; }
+        public string GameId { get; set; } = string.Empty;
         public PaymentStatus Status { get; set; }
     }
 

@@ -1,22 +1,13 @@
 ﻿using Catalog.Worker.Domain.Entities;
 using Catalog.Worker.Domain.Repositories;
-using Catalog.Worker.Infrastructure.Context;
+using MongoDB.Driver;
 
 namespace Catalog.Worker.Infrastructure.Repositories
 {
-    public class UserCatalogRepository : IUserCatalogRepository
+    public class UserCatalogRepository(IMongoDatabase database) : IUserCatalogRepository
     {
-        private readonly AppDbContext _context;
+        private readonly string _collectionName = "catalogs";
 
-        public UserCatalogRepository(AppDbContext context)
-        {
-            _context = context;
-        }
-
-        public async Task CreateAsync(UserCatalog userCatalog)
-        {
-            _context.UsersCatalogs.Add(userCatalog);
-            await _context.SaveChangesAsync();
-        }
+        public async Task CreateAsync(UserCatalog userCatalog) => await database.GetCollection<UserCatalog>(_collectionName).InsertOneAsync(userCatalog);
     }
 }

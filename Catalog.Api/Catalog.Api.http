@@ -1,5 +1,5 @@
 @Users.API_HostAddress = http://localhost:5000
-@Catalog.Api_HostAddress = http://localhost:5010
+@Catalog.Api_HostAddress = http://localhost:5025
 
 ### Principais operações da API de catálogo de jogos
 ### 1. Autenticar e obter token
@@ -23,8 +23,9 @@ Accept: application/json
 {
   "name": "Resident Evil X",
   "description": "A new chapter in the Resident Evil series, combining survival horror with intense action.",
-  "genre": "Action",
-  "release": "2026-12-01",
+  "publisher": "Capcom",
+  "genres": [{"name": "Action"}],
+  "releaseDate": "2026-12-01",
   "price": 79.99
 }
 ###
@@ -37,9 +38,9 @@ Accept: application/json
 
 {
   "userId": 1,
-  "gameId": 1,
+  "gameId": "6a899d5bc6debd5e03eceef6",
   "userEmail": "admin@fiapcloud.com.br",
-  "price": 79.99
+  "price": 32.67
 }
 ###
 
@@ -59,28 +60,29 @@ Accept: application/json
 ###
 
 ### Obter um jogo específico
-GET {{Catalog.Api_HostAddress}}/game/1
+GET {{Catalog.Api_HostAddress}}/game/6a84f2a42821cd3184ebc821
 Authorization: Bearer {{login.response.body.$.token}}
 Accept: application/json
 ###
 
 ### Atualizar um jogo existente
-PUT {{Catalog.Api_HostAddress}}/game/1
+PUT {{Catalog.Api_HostAddress}}/game/6a89cfa4ae0c1c1eaec0839b
 Authorization: Bearer {{login.response.body.$.token}}
 Content-Type: application/json
 Accept: application/json
 
 {
-  "name": "Resident Evil X - Remastered",
-  "description": "Remastered edition with improved visuals and extra content.",
-  "genre": "Action",
-  "release": "2027-01-25",
-  "price": 80.00
+  "name": "Resident Evil X",
+  "description": "A new Resident Evil Series game",
+  "publisher": "Capcom",
+  "releaseDate": "2026-02-27T00:00:00Z",
+  "price": 70,
+  "status": "ACTIVE"
 }
 ###
 
 ### Remover um jogo
-DELETE {{Catalog.Api_HostAddress}}/game/1
+DELETE {{Catalog.Api_HostAddress}}/game/6a84f2a42821cd3184ebc821
 Authorization: Bearer {{login.response.body.$.token}}
 Accept: application/json
 ###

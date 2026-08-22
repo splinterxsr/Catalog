@@ -6,49 +6,66 @@ using Fcg.Contracts;
 
 namespace Catalog.Worker.Infrastructure.Handlers
 {
-    public class PaymentConsumer : IConsumer<PaymentProcessedEvent>
+    public class PaymentConsumer(IUserCatalogRepository userCatalogRepository, IOrderRepository orderRepository, ILogger<PaymentConsumer> logger) : IConsumer<PaymentProcessedEvent>
     {
-        private readonly IUserCatalogRepository _userCatalogRepository;
-        private readonly ILogger<PaymentConsumer> _logger;
-
-        public PaymentConsumer(IUserCatalogRepository userCatalogRepository, ILogger<PaymentConsumer> logger)
-        {
-            _userCatalogRepository = userCatalogRepository;
-            _logger = logger;
-        }
-
         public async Task Consume(ConsumeContext<PaymentProcessedEvent> context)
         {
             var order = context.Message;
 
-            _logger.LogInformation("Payment Processed:");
-            _logger.LogInformation("   Transaction ID: {TransactionId}", order.TransactionId);
-            _logger.LogInformation("   User: {UserId}", order.UserId);
-            _logger.LogInformation("   Game: {GameId}", order.GameId);
-            _logger.LogInformation("   Status: {Status}", order.Status);
+            logger.LogInformation("Payment Processed:");
+            logger.LogInformation("   Transaction ID: {TransactionId}", order.TransactionId);
+            logger.LogInformation("   User: {UserId}", order.UserId);
+            logger.LogInformation("   Game: {GameId}", order.GameId);
+            logger.LogInformation("   Status: {Status}", order.Status);
 
             if (order.Status == PaymentStatus.Approved)
             {
-                _logger.LogInformation("Payment approved succesfully!");
-                _logger.LogInformation("---");
+                logger.LogInformation("Payment approved succesfully!");
+                logger.LogInformation("---");
 
-                _logger.LogInformation("Adding game to user catalog...");
+                logger.LogInformation("Adding game to user catalog...");
 
                 try
                 {
-                    var catalog = new UserCatalog(order.GameId, order.UserId);
+                    var gameOrder = await orderRepository.GetOrderByIdAsync(context.Message.OrderId.ToString());
 
-                    await _userCatalogRepository.CreateAsync(catalog);
+                    if (gameOrder is null)
+                    {
+                        logger.LogInformation("Game order not found!");
+
+                        return;
+                    }
+
+                    gameOrder.Status = "APPROVED";
+
+                    await orderRepository.UpdateAsync(gameOrder);
+
+                    var catalog = new UserCatalog(order.GameId, order.OrderId, order.UserId);
+
+                    await userCatalogRepository.CreateAsync(catalog);
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError(ex, "An error occurred while adding the game to the user catalog.");
+                    logger.LogError(ex, "An error occurred while adding the game to the user catalog.");
                 }
             }
             else
             {
-                _logger.LogInformation("Payment rejected!");
-                _logger.LogInformation("---");
+                logger.LogInformation("Payment rejected!");
+                logger.LogInformation("---");
+
+                var gameOrder = await orderRepository.GetOrderByIdAsync(context.Message.OrderId.ToString());
+
+                if (gameOrder is null)
+                {
+                    logger.LogInformation("Game order not found!");
+
+                    return;
+                }
+
+                gameOrder.Status = "REJECTED";
+
+                await orderRepository.UpdateAsync(gameOrder);
             }
         }
     }

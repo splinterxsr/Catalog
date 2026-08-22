@@ -1,52 +1,18 @@
 ﻿using Catalog.Api.Domain.Entities;
 using Catalog.Api.Domain.Repositories;
-using Catalog.Api.Infrastructure.Context;
-using Microsoft.EntityFrameworkCore;
+using MongoDB.Driver;
 
 namespace Catalog.Api.Infrastructure.Repositories
 {
-    public class GameRepository : IGameRepository
+    public class GameRepository(IMongoDatabase database) : IGameRepository
     {
-        private readonly AppDbContext _context;
+        private readonly string _collectionName = "games";
 
-        public GameRepository(AppDbContext context)
-        {
-            _context = context;
-        }
-
-        public async Task<IEnumerable<Game>> GetAsync(CancellationToken cancellationToken)
-        {
-            return await _context.Games.ToListAsync(cancellationToken);
-        }
-
-        public async Task<Game?> GetByIdAsync(int id, CancellationToken cancellationToken)
-        {
-            return await _context.Games.FindAsync(id, cancellationToken);
-        }
-
-        public async Task<Game?> GetByNameAsync(string name, CancellationToken cancellationToken)
-        {
-            return await _context.Games.FirstOrDefaultAsync(g => g.Name == name, cancellationToken);
-        }
-
-        public async Task CreateAsync(Game game, CancellationToken cancellationToken)
-        {
-            _context.Games.Add(game);
-            await _context.SaveChangesAsync(cancellationToken);
-        }        
-
-        public async Task UpdateAsync(Game game, CancellationToken cancellationToken)
-        {
-            _context.Games.Update(game);
-            await _context.SaveChangesAsync(cancellationToken);
-        }
-
-        public async Task DeleteAsync(int id, CancellationToken cancellationToken)
-        {
-            var game = await GetByIdAsync(id, cancellationToken) ?? throw new Exception($"Game with id {id} not found.");
-
-            _context.Games.Remove(game);
-            await _context.SaveChangesAsync(cancellationToken);
-        }
+        public async Task<IEnumerable<Game>> GetAsync(CancellationToken cancellationToken) => await database.GetCollection<Game>(_collectionName).Find(_ => true).ToListAsync(cancellationToken);
+        public async Task<Game?> GetByIdAsync(string id, CancellationToken cancellationToken) => await database.GetCollection<Game>(_collectionName).Find(g => g.Id == id).FirstOrDefaultAsync(cancellationToken);
+        public async Task<Game?> GetByNameAsync(string name, CancellationToken cancellationToken) => await database.GetCollection<Game>(_collectionName).Find(g => g.Name == name).FirstOrDefaultAsync(cancellationToken);
+        public async Task CreateAsync(Game game, CancellationToken cancellationToken) => await database.GetCollection<Game>(_collectionName).InsertOneAsync(game, new InsertOneOptions { }, cancellationToken);
+        public async Task UpdateAsync(Game game, CancellationToken cancellationToken) => await database.GetCollection<Game>(_collectionName).ReplaceOneAsync(g => g.Id == game.Id, game, new ReplaceOptions { IsUpsert = true }, cancellationToken);
+        public async Task DeleteAsync(string id, CancellationToken cancellationToken) => await database.GetCollection<Game>(_collectionName).DeleteOneAsync(g => g.Id == id, cancellationToken);
     }
 }

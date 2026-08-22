@@ -1,4 +1,5 @@
-﻿using Catalog.Api.Domain.Enums;
+﻿using Catalog.Api.Domain.Entities;
+using Catalog.Api.Domain.Enums;
 using Catalog.Api.Domain.Repositories;
 using Catalog.Api.Domain.Services;
 using Catalog.Api.Models;
@@ -34,7 +35,7 @@ namespace Catalog.Api.Controllers
 
         [HttpGet]
         [Route("{id}")]
-        public async Task<IActionResult> Get(int id, CancellationToken cancellationToken)
+        public async Task<IActionResult> Get(string id, CancellationToken cancellationToken)
         {
             var game = await _repository.GetByIdAsync(id, cancellationToken);
 
@@ -67,7 +68,7 @@ namespace Catalog.Api.Controllers
 
         [HttpPut]
         [Route("{id}")]
-        public async Task<IActionResult> Put(int id, [FromBody] GameUpdate update, CancellationToken cancellationToken)
+        public async Task<IActionResult> Put(string id, [FromBody] GameUpdate update, CancellationToken cancellationToken)
         {
             if (ModelState.IsValid is false)
             {
@@ -76,7 +77,7 @@ namespace Catalog.Api.Controllers
 
             try
             {
-                await _service.UpdateAsync(id, update.Name, update.Description, update.Genre, update.Release, update.Price, cancellationToken);
+                await _service.UpdateAsync(id, update.Name, update.Description, update.Publisher, update.ReleaseDate, update.Price, update.Status, cancellationToken);
             }
             catch (Exception ex)
             {
@@ -88,7 +89,7 @@ namespace Catalog.Api.Controllers
 
         [HttpDelete]
         [Route("{id}")]
-        public async Task<IActionResult> Delete(int id, CancellationToken cancellationToken)
+        public async Task<IActionResult> Delete(string id, CancellationToken cancellationToken)
         {
             try
             {

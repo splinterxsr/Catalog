@@ -1,15 +1,12 @@
 using Catalog.Api.Domain.Repositories;
 using Catalog.Api.Domain.Services;
 using Catalog.Api.Extensions;
-using Catalog.Api.Infrastructure.Context;
 using Catalog.Api.Infrastructure.Repositories;
 using Catalog.Api.Infrastructure.Services;
 using Catalog.Api.Profiles;
 using MassTransit;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.HttpOverrides;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Diagnostics.HealthChecks;
 using System.Text.Json;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -22,26 +19,9 @@ builder.Services.AddPolicies();
 builder.Services.AddAuthorization();
 builder.Services.AddSingleton<Mapper>();
 
-#region DB Postgres
+#region MongoDb
 
-var postgreUser = Environment.GetEnvironmentVariable("POSTGRES_USER") ?? "catalog_user";
-var postgrePassword = Environment.GetEnvironmentVariable("POSTGRES_PASSWORD") ?? "catalog_pass";
-var postgreDb = Environment.GetEnvironmentVariable("POSTGRES_DB") ?? "catalog_db";
-var postgreHost = Environment.GetEnvironmentVariable("POSTGRES_HOST") ?? "localhost";
-
-var connectionString = $"Host={postgreHost};Port=5432;Database={postgreDb};Username={postgreUser};Password={postgrePassword}";
-
-builder.Services.AddDbContext<AppDbContext>(options =>
-{
-    if (!string.IsNullOrWhiteSpace(connectionString))
-    {
-        options.UseNpgsql(connectionString);
-    }
-}, ServiceLifetime.Scoped);
-
-builder.Services.AddHealthChecks()
-    .AddCheck("Self", () => HealthCheckResult.Healthy(), tags: new[] { "live" })
-    .AddNpgSql(connectionString, name: "postgres-sql", tags: new[] { "ready" });
+builder.Services.AddMongoDb();
 
 #endregion
 
@@ -73,7 +53,8 @@ builder.Services.AddTransient<ICatalogService, CatalogService>();
 builder.Services.AddTransient<IGameService, GameService>();
 
 builder.Services.AddTransient<IGameRepository, GameRepository>();
-builder.Services.AddTransient<IUserCatalogRepository, UserCatalogRepository>();
+builder.Services.AddTransient<ICatalogRepository, CatalogRepository>();
+builder.Services.AddTransient<IOrderRepository, OrderRepository>();
 
 #endregion
 
@@ -133,7 +114,5 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
-
-app.ApplyMigrations();
 
 app.Run();

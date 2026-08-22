@@ -1,41 +1,45 @@
-﻿using Catalog.Api.Domain.Repositories;
+﻿using Catalog.Api.Domain.Entities;
+using Catalog.Api.Domain.Repositories;
 using Catalog.Api.Domain.Services;
 using Fcg.Contracts;
 using MassTransit;
+using MongoDB.Bson;
 
 namespace Catalog.Api.Infrastructure.Services
 {
-    public class CatalogService : ICatalogService
+    public class CatalogService(IBus bus, ICatalogRepository userCatalogRepository, IGameRepository gameRepository, IOrderRepository orderRepository, ILogger<CatalogService> logger) : ICatalogService
     {
-        private readonly IBus _bus;
-        private readonly IUserCatalogRepository _userCatalogRepository;
-        private readonly IGameRepository _gameRepository;
-        private readonly ILogger<CatalogService> _logger;
-
-        public CatalogService(IBus bus, IUserCatalogRepository userCatalogRepository, IGameRepository gameRepository, ILogger<CatalogService> logger)
+        public async Task AddToCatalogAsync(int userId, string userEmail, string gameId, decimal price, CancellationToken cancellationToken = default)
         {
-            _bus = bus;
-            _userCatalogRepository = userCatalogRepository;
-            _gameRepository = gameRepository;
-            _logger = logger;
-        }
+            _ = await gameRepository.GetByIdAsync(gameId, cancellationToken) ?? throw new ArgumentException($"Game {gameId} not found.");
 
-        public async Task AddToCatalogAsync(int userId, string userEmail, int gameId, decimal price, CancellationToken cancellationToken = default)
-        {
-            _ = await _gameRepository.GetByIdAsync(gameId, cancellationToken) ?? throw new ArgumentException($"Game {gameId} not found.");
-
-            var existingGameCatalog = await _userCatalogRepository.GetByIdAsync(userId, gameId, cancellationToken);
+            var existingGameCatalog = await userCatalogRepository.GetByIdAsync(userId, gameId, cancellationToken);
 
             if (existingGameCatalog is not null)
             {
                 throw new InvalidOperationException($"User {userId} already has game {gameId} in their catalog.");
             }
 
-            _logger.LogInformation("Placing a new game order. UserId: {UserId}, GameId: {GameId}, Price: {Price}", userId, gameId, price);
+            logger.LogInformation("Placing a new game order. UserId: {UserId}, GameId: {GameId}, Price: {Price}", userId, gameId, price);
 
-            var gameOrder = new OrderPlacedEvent(userId, userEmail, gameId, price);
+            var id = ObjectId.GenerateNewId().ToString();
 
-            await _bus.Publish(gameOrder, cancellationToken);
+            var order = new GameOrder
+            {
+                Id = id.ToString(),
+                UserId = userId,
+                UserEmail = userEmail,
+                GameId = gameId,
+                Price = price,
+                Status = "PENDING",
+                OrderDate = DateTime.Now
+            };
+
+            await orderRepository.AddAsync(order, cancellationToken);
+
+            var gameOrder = new OrderPlacedEvent(id, userId, userEmail, gameId, price);
+
+            await bus.Publish(gameOrder, cancellationToken);
         }
     }
 }

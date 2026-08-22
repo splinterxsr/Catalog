@@ -3,8 +3,7 @@
     public class UserCatalogResponse
     {
         public int UserId { get; set; }
-        public int GameId { get; set; }
-        public string? GameName { get; set; }
+        public string GameId { get; set; } = string.Empty;
         public DateOnly BuyDate { get; set; }
     }
 }

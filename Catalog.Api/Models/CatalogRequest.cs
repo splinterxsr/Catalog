@@ -12,7 +12,7 @@ namespace Catalog.Api.Models
         public string? UserEmail { get; set; }
 
         [Required(ErrorMessage = "The field 'GameId' is mandatory.")]
-        public int? GameId { get; set; }
+        public string GameId { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "The field 'Price' is mandatory.")]
         public decimal? Price { get; set; }

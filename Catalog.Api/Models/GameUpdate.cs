@@ -12,14 +12,17 @@ namespace Catalog.Api.Models
         [StringLength(200, ErrorMessage = "The field 'Description' must be a maximum of 200 characters.")]
         public required string Description { get; set; }
 
-        [Required(ErrorMessage = "The field 'Genre' is mandatory.")]
-        [StringLength(20, ErrorMessage = "The field 'Genre' must be a maximum of 20 characters.")]
-        public required string Genre { get; set; }
+        [Required(ErrorMessage = "The field 'Publisher' is mandatory.")]
+        [StringLength(50, ErrorMessage = "The field 'Publisher' must be a maximum of 50 characters.")]
+        public required string Publisher { get; set; }
 
-        [Required(ErrorMessage = "The field 'Release' is mandatory.")]
-        public DateOnly Release { get; set; }
+        [Required(ErrorMessage = "The field 'ReleaseDate' is mandatory.")]
+        public DateTime ReleaseDate { get; set; }
 
         [Required(ErrorMessage = "The field 'Price' is mandatory.")]
         public decimal Price { get; set; }
+
+        [Required(ErrorMessage = "The field 'Status' is mandatory.")]
+        public string Status { get; set; } = string.Empty;
     }
 }

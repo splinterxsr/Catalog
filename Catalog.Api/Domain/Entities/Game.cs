@@ -29,11 +29,6 @@ namespace Catalog.Api.Domain.Entities
             Price = price;
         }
 
-        public void Add()
-        {
-            Status = "ACTIVE";
-        }
-
         public void Update(string name, string description, string publisher, DateTime releaseDate, decimal price, string status)
         {
             Name = name;

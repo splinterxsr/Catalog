@@ -11,6 +11,7 @@ namespace Catalog.Api.Profiles
         public partial Game Map(GameRequest source);
 
         [MapperIgnoreSource(nameof(UserCatalog.Id))]
+        [MapperIgnoreSource(nameof(UserCatalog.OrderId))]
         public partial UserCatalogResponse Map(UserCatalog source);
         public partial IEnumerable<UserCatalogResponse> Map(IEnumerable<UserCatalog> source);
     }

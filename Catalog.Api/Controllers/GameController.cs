@@ -1,5 +1,4 @@
-﻿using Catalog.Api.Domain.Entities;
-using Catalog.Api.Domain.Enums;
+﻿using Catalog.Api.Domain.Enums;
 using Catalog.Api.Domain.Repositories;
 using Catalog.Api.Domain.Services;
 using Catalog.Api.Models;
@@ -56,6 +55,7 @@ namespace Catalog.Api.Controllers
 
             try
             {
+                game.Status = "ACTIVE";
                 await _service.AddAsync(game, cancellationToken);
             }
             catch (Exception ex)

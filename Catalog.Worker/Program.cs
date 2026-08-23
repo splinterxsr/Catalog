@@ -5,6 +5,7 @@ using MassTransit;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using MongoDB.Driver;
+using StackExchange.Redis;
 
 var builder = Host.CreateApplicationBuilder(args);
 
@@ -37,6 +38,19 @@ builder.Services.AddSingleton<IMongoDatabase>(sp =>
 
     return client.GetDatabase(database);
 });
+
+#endregion
+
+#region Redis
+
+builder.Services.AddSingleton<IConnectionMultiplexer>(sp =>
+{
+    var conn = Environment.GetEnvironmentVariable("REDIS_HOST") ?? "localhost:6379";
+    return ConnectionMultiplexer.Connect(conn);
+});
+
+builder.Services.AddScoped<IDatabase>(sp =>
+    sp.GetRequiredService<IConnectionMultiplexer>().GetDatabase());
 
 #endregion
 

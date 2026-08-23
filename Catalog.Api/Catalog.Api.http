@@ -21,12 +21,12 @@ Content-Type: application/json
 Accept: application/json
 
 {
-  "name": "Resident Evil X",
-  "description": "A new chapter in the Resident Evil series, combining survival horror with intense action.",
-  "publisher": "Capcom",
-  "genres": [{"name": "Action"}],
-  "releaseDate": "2026-12-01",
-  "price": 79.99
+  "name": "Diablo IV",
+  "description": "Diablo",
+  "publisher": "Blizzard Activision",
+  "genres": [{"name": "RPG"}],
+  "releaseDate": "2020-12-01",
+  "price": 39.99
 }
 ###
 
@@ -38,9 +38,9 @@ Accept: application/json
 
 {
   "userId": 1,
-  "gameId": "6a899d5bc6debd5e03eceef6",
+  "gameId": "6a8b03133012ceb88322f1e6",
   "userEmail": "admin@fiapcloud.com.br",
-  "price": 32.67
+  "price": 19.90
 }
 ###
 
@@ -60,7 +60,7 @@ Accept: application/json
 ###
 
 ### Obter um jogo específico
-GET {{Catalog.Api_HostAddress}}/game/6a84f2a42821cd3184ebc821
+GET {{Catalog.Api_HostAddress}}/game/6a899d5bc6debd5e03eceef6
 Authorization: Bearer {{login.response.body.$.token}}
 Accept: application/json
 ###

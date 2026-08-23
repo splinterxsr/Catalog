@@ -1,12 +1,14 @@
 using Catalog.Api.Domain.Repositories;
 using Catalog.Api.Domain.Services;
 using Catalog.Api.Extensions;
+using Catalog.Api.Infrastructure.Cache;
 using Catalog.Api.Infrastructure.Repositories;
 using Catalog.Api.Infrastructure.Services;
 using Catalog.Api.Profiles;
 using MassTransit;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.HttpOverrides;
+using StackExchange.Redis;
 using System.Text.Json;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -22,6 +24,16 @@ builder.Services.AddSingleton<Mapper>();
 #region MongoDb
 
 builder.Services.AddMongoDb();
+
+#endregion
+
+#region Redis
+
+builder.Services.AddSingleton<IConnectionMultiplexer>(sp =>
+{
+    var conn = Environment.GetEnvironmentVariable("REDIS_HOST") ?? "localhost:6379";
+    return ConnectionMultiplexer.Connect(conn);
+});
 
 #endregion
 
@@ -49,11 +61,19 @@ builder.Services.AddMassTransit(x =>
 
 #region Dependency Injection
 
+builder.Services.AddSingleton<IRedisCacheService, RedisCacheService>();
+
 builder.Services.AddTransient<ICatalogService, CatalogService>();
 builder.Services.AddTransient<IGameService, GameService>();
 
-builder.Services.AddTransient<IGameRepository, GameRepository>();
-builder.Services.AddTransient<ICatalogRepository, CatalogRepository>();
+builder.Services.AddTransient<GameRepository>();
+builder.Services.AddTransient<IGameRepository>(sp =>
+    new CachedGameRepository(sp.GetRequiredService<GameRepository>(), sp.GetRequiredService<IRedisCacheService>()));
+
+builder.Services.AddTransient<CatalogRepository>();
+builder.Services.AddTransient<ICatalogRepository>(sp =>
+    new CachedCatalogRepository(sp.GetRequiredService<CatalogRepository>(), sp.GetRequiredService<IRedisCacheService>()));
+
 builder.Services.AddTransient<IOrderRepository, OrderRepository>();
 
 #endregion

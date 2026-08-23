@@ -1,12 +1,13 @@
-﻿using MassTransit;
-using Microsoft.Extensions.Logging;
+﻿using Catalog.Worker.Domain.Entities;
 using Catalog.Worker.Domain.Repositories;
-using Catalog.Worker.Domain.Entities;
 using Fcg.Contracts;
+using MassTransit;
+using Microsoft.Extensions.Logging;
+using StackExchange.Redis;
 
 namespace Catalog.Worker.Infrastructure.Handlers
 {
-    public class PaymentConsumer(IUserCatalogRepository userCatalogRepository, IOrderRepository orderRepository, ILogger<PaymentConsumer> logger) : IConsumer<PaymentProcessedEvent>
+    public class PaymentConsumer(IUserCatalogRepository userCatalogRepository, IOrderRepository orderRepository, IDatabase cache, ILogger<PaymentConsumer> logger) : IConsumer<PaymentProcessedEvent>
     {
         public async Task Consume(ConsumeContext<PaymentProcessedEvent> context)
         {
@@ -43,6 +44,11 @@ namespace Catalog.Worker.Infrastructure.Handlers
                     var catalog = new UserCatalog(order.GameId, order.OrderId, order.UserId);
 
                     await userCatalogRepository.CreateAsync(catalog);
+
+                    // Remove cache
+                    var keyPrefix = Environment.GetEnvironmentVariable("USER_CATALOG_PREFIX") ?? "catalog:user";
+                    var key = $"{keyPrefix}{order.UserId}";
+                    await cache.KeyDeleteAsync(keyPrefix);
                 }
                 catch (Exception ex)
                 {

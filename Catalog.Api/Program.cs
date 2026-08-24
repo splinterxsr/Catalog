@@ -37,26 +37,25 @@ builder.Services.AddSingleton<IConnectionMultiplexer>(sp =>
 
 #endregion
 
-#region Masstransit (RabbitMQ)
-
+#region MassTransit (AWS SQS / LocalStack)
 builder.Services.AddMassTransit(x =>
 {
-    var host = Environment.GetEnvironmentVariable("RABBITMQ_HOST") ?? "localhost";
-    var user = Environment.GetEnvironmentVariable("RABBITMQ_DEFAULT_USER") ?? "guest";
-    var password = Environment.GetEnvironmentVariable("RABBITMQ_DEFAULT_PASS") ?? "guest";
-
-    x.UsingRabbitMq((context, cfg) =>
+    x.UsingAmazonSqs((context, cfg) =>
     {
-        cfg.Host(host, "/", h =>
+        cfg.Host("us-east-1", h =>
         {
-            h.Username(user);
-            h.Password(password);
+            h.AccessKey("test");
+            h.SecretKey("test");
+
+            var awsEndpoint = Environment.GetEnvironmentVariable("AWS_ENDPOINT") ?? "http://localhost:4566";
+
+            h.Config(new Amazon.SQS.AmazonSQSConfig { ServiceURL = awsEndpoint });
+            h.Config(new Amazon.SimpleNotificationService.AmazonSimpleNotificationServiceConfig { ServiceURL = awsEndpoint });
         });
 
         cfg.ConfigureEndpoints(context);
     });
 });
-
 #endregion
 
 #region Dependency Injection

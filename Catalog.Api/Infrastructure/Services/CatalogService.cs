@@ -7,7 +7,7 @@ using MongoDB.Bson;
 
 namespace Catalog.Api.Infrastructure.Services
 {
-    public class CatalogService(IBus bus, ICatalogRepository userCatalogRepository, IGameRepository gameRepository, IOrderRepository orderRepository, ILogger<CatalogService> logger) : ICatalogService
+    public class CatalogService(ISendEndpointProvider sendEndpointProvider, ICatalogRepository userCatalogRepository, IGameRepository gameRepository, IOrderRepository orderRepository, ILogger<CatalogService> logger, IConfiguration configuration) : ICatalogService
     {
         public async Task AddToCatalogAsync(int userId, string userEmail, string gameId, decimal price, CancellationToken cancellationToken = default)
         {
@@ -39,7 +39,13 @@ namespace Catalog.Api.Infrastructure.Services
 
             var gameOrder = new OrderPlacedEvent(id, userId, userEmail, gameId, price);
 
-            await bus.Publish(gameOrder, cancellationToken);
+            var queueName = configuration["ORDER_PLACED_QUEUE_NAME"] ?? "orders-placed-queue";
+
+            var endpoint = await sendEndpointProvider.GetSendEndpoint(new Uri($"queue:{queueName}"));
+
+            await endpoint.Send(gameOrder, cancellationToken);
+
+            logger.LogInformation($"Evento 'OrderPlacedEvent' enviado com sucesso para a fila {queueName}!");
         }
     }
 }

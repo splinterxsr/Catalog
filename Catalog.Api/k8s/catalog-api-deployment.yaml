@@ -27,26 +27,31 @@ spec:
             - name: AWS_ENDPOINT
               value: "http://localstack:4566"
               
-            - name: POSTGRES_USER
-              valueFrom:
-                secretKeyRef:
-                  name: app-secrets
-                  key: POSTGRES_USER
-            - name: POSTGRES_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: app-secrets
-                  key: POSTGRES_PASSWORD
-            - name: POSTGRES_DB
-              valueFrom:
-                secretKeyRef:
-                  name: app-secrets
-                  key: POSTGRES_DB
-            - name: POSTGRES_HOST
+            - name: REDIS_HOST
               valueFrom:
                 configMapKeyRef:
                   name: app-config
-                  key: POSTGRES_HOST
+                  key: REDIS_HOST
+            - name: MONGODB_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: app-config
+                  key: MONGODB_HOST
+            - name: MONGODB_DB
+              valueFrom:
+                configMapKeyRef:
+                  name: app-config
+                  key: MONGODB_DB
+            - name: MONGO_INITDB_ROOT_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: app-secrets
+                  key: MONGO_INITDB_ROOT_USERNAME
+            - name: MONGO_INITDB_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: app-secrets
+                  key: MONGO_INITDB_ROOT_PASSWORD
             - name: JWT_KEY
               valueFrom:
                 secretKeyRef:

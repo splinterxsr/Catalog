@@ -1,10 +1,11 @@
 @Users.API_HostAddress = http://localhost:5000
 @Catalog.Api_HostAddress = http://localhost:5025
+@Kong_HostAddress = http://localhost:8000
 
 ### Principais operações da API de catálogo de jogos
 ### 1. Autenticar e obter token
 # @name login
-POST {{Users.API_HostAddress}}/api/users/auth
+POST {{Kong_HostAddress}}/api/users/auth
 Content-Type: application/json
 
 {
@@ -15,7 +16,7 @@ Content-Type: application/json
 ###
 
 ### 2. Cadastrar um novo jogo
-POST {{Catalog.Api_HostAddress}}/game/
+POST {{Kong_HostAddress}}/game/
 Authorization: Bearer {{login.response.body.$.token}}
 Content-Type: application/json
 Accept: application/json
@@ -31,7 +32,7 @@ Accept: application/json
 ###
 
 ### 3. Adicionar um jogo ao catálogo de um usuário
-POST {{Catalog.Api_HostAddress}}/catalog/
+POST {{Kong_HostAddress}}/catalog/
 Authorization: Bearer {{login.response.body.$.token}}
 Content-Type: application/json
 Accept: application/json
@@ -45,7 +46,7 @@ Accept: application/json
 ###
 
 ### 4. Consultar jogos no catalogo do usuário
-GET {{Catalog.Api_HostAddress}}/catalog/1
+GET {{Kong_HostAddress}}/catalog/1
 Authorization: Bearer {{login.response.body.$.token}}
 Accept: application/json
 
@@ -54,19 +55,19 @@ Accept: application/json
 ### Demais operações:
 
 ### Obter todos os jogos
-GET {{Catalog.Api_HostAddress}}/game/
+GET {{Kong_HostAddress}}/game/
 Authorization: Bearer {{login.response.body.$.token}}
 Accept: application/json
 ###
 
 ### Obter um jogo específico
-GET {{Catalog.Api_HostAddress}}/game/6a899d5bc6debd5e03eceef6
+GET {{Kong_HostAddress}}/game/6a899d5bc6debd5e03eceef6
 Authorization: Bearer {{login.response.body.$.token}}
 Accept: application/json
 ###
 
 ### Atualizar um jogo existente
-PUT {{Catalog.Api_HostAddress}}/game/6a89cfa4ae0c1c1eaec0839b
+PUT {{Kong_HostAddress}}/game/6a89cfa4ae0c1c1eaec0839b
 Authorization: Bearer {{login.response.body.$.token}}
 Content-Type: application/json
 Accept: application/json
@@ -82,7 +83,7 @@ Accept: application/json
 ###
 
 ### Remover um jogo
-DELETE {{Catalog.Api_HostAddress}}/game/6a84f2a42821cd3184ebc821
+DELETE {{Kong_HostAddress}}/game/6a84f2a42821cd3184ebc821
 Authorization: Bearer {{login.response.body.$.token}}
 Accept: application/json
 ###

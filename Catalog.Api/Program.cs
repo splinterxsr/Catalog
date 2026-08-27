@@ -32,7 +32,7 @@ builder.Services.AddMongoDb();
 builder.Services.AddSingleton<IConnectionMultiplexer>(sp =>
 {
     var conn = Environment.GetEnvironmentVariable("REDIS_HOST") ?? "localhost:6379";
-    return ConnectionMultiplexer.Connect(conn);
+    return ConnectionMultiplexer.Connect($"{conn},abortConnect=false");
 });
 
 #endregion

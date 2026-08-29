@@ -16,9 +16,14 @@ builder.Services.AddSingleton<IMongoClient>(sp =>
     var pass = Environment.GetEnvironmentVariable("MONGO_INITDB_ROOT_PASSWORD") ?? "r00tp@ss";
     var host = Environment.GetEnvironmentVariable("MONGODB_HOST") ?? "127.0.0.1:27017";
 
-    var connectionString = $"mongodb://{user}:{pass}@{host}/?authSource=admin";
+    var credential = MongoCredential.CreateCredential(
+                    databaseName: "admin",
+                    username: user,
+                    password: pass
+                );
 
-    var settings = MongoClientSettings.FromConnectionString(connectionString);
+    var settings = MongoClientSettings.FromConnectionString($"mongodb://{host}");
+    settings.Credential = credential;
     settings.ServerSelectionTimeout = TimeSpan.FromSeconds(90);
 
     return new MongoClient(settings);
@@ -27,6 +32,7 @@ builder.Services.AddSingleton<IMongoClient>(sp =>
 builder.Services.AddSingleton<IMongoDatabase>(sp =>
 {
     var database = Environment.GetEnvironmentVariable("MONGODB_DB") ?? "fcg";
+
     var client = sp.GetRequiredService<IMongoClient>();
 
     return client.GetDatabase(database);

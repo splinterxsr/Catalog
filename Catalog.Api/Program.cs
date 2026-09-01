@@ -8,6 +8,7 @@ using Catalog.Api.Profiles;
 using MassTransit;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.HttpOverrides;
+using Prometheus;
 using StackExchange.Redis;
 using System.Text.Json;
 
@@ -127,11 +128,15 @@ app.MapHealthChecks("/health/ready", new HealthCheckOptions
 
 #endregion
 
+app.UseHttpMetrics();
+
 app.UseForwardedHeaders();
 app.UseCors(options => options.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
 app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.MapMetrics();
 
 app.Run();

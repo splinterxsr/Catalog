@@ -16,7 +16,7 @@ Content-Type: application/json
 ###
 
 ### 2. Cadastrar um novo jogo
-POST {{Catalog.Api_HostAddress }}/game/
+POST {{Kong_HostAddress }}/game/
 Authorization: Bearer {{login.response.body.$.token}}
 Content-Type: application/json
 Accept: application/json
@@ -32,7 +32,7 @@ Accept: application/json
 ###
 
 ### 3. Adicionar um jogo ao catálogo de um usuário
-POST {{Catalog.Api_HostAddress}}/catalog/
+POST {{Kong_HostAddress}}/catalog/
 Authorization: Bearer {{login.response.body.$.token}}
 Content-Type: application/json
 Accept: application/json

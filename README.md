@@ -17,6 +17,6 @@ Este projeto tem como objetivo executar processos relacionados ao cadastro de jo
 
 - **.NET 10**: Framework principal
 - **ASP.NET Core MVC**: WebAPI do Catalogo
-- **MassTransit.RabbitMQ 8.5.10**: Biblioteca para comunicação com RabbitMQ
+- **MassTransit.AmazonSQS 8.3.4**: Biblioteca para abstração de comunicação com AmazonSQS
 - **MongoDB.Driver 3.11.0**: Persistência de jogos e catálogo
 - **StackExchange.Redis 3.1.31**: Serviço de cache

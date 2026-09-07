@@ -16,7 +16,7 @@ Content-Type: application/json
 ###
 
 ### 2. Cadastrar um novo jogo
-POST {{Kong_HostAddress}}/game/
+POST {{Catalog.Api_HostAddress }}/game/
 Authorization: Bearer {{login.response.body.$.token}}
 Content-Type: application/json
 Accept: application/json

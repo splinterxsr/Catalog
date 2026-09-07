@@ -1,5 +1,5 @@
 @Users.API_HostAddress = http://localhost:5000
-@Catalog.Api_HostAddress = http://localhost:5025
+@Catalog.Api_HostAddress = http://localhost:5010
 @Kong_HostAddress = http://localhost:8000
 
 ### Principais operações da API de catálogo de jogos
@@ -16,30 +16,30 @@ Content-Type: application/json
 ###
 
 ### 2. Cadastrar um novo jogo
-POST {{Catalog.Api_HostAddress }}/game/
+POST {{Kong_HostAddress}}/game/
 Authorization: Bearer {{login.response.body.$.token}}
 Content-Type: application/json
 Accept: application/json
 
 {
-  "name": "Diablo IV",
-  "description": "Diablo",
-  "publisher": "Blizzard Activision",
+  "name": "Onimusha",
+  "description": "Onimusha is a hack and slash video game developed by Capcom.",
+  "publisher": "Capcom",
   "genres": [{"name": "RPG"}],
-  "releaseDate": "2020-12-01",
-  "price": 39.99
+  "releaseDate": "2026-09-04",
+  "price": 69.99
 }
 ###
 
 ### 3. Adicionar um jogo ao catálogo de um usuário
-POST {{Catalog.Api_HostAddress}}/catalog/
+POST {{Kong_HostAddress}}/catalog/
 Authorization: Bearer {{login.response.body.$.token}}
 Content-Type: application/json
 Accept: application/json
 
 {
   "userId": 1,
-  "gameId": "6a8b03133012ceb88322f1e6",
+  "gameId": "6a976cda75125ed4546e6295",
   "userEmail": "admin@fiapcloud.com.br",
   "price": 19.90
 }
@@ -61,7 +61,7 @@ Accept: application/json
 ###
 
 ### Obter um jogo específico
-GET {{Kong_HostAddress}}/game/6a899d5bc6debd5e03eceef6
+GET {{Kong_HostAddress}}/game/6a975e621931668d8fc8fd57
 Authorization: Bearer {{login.response.body.$.token}}
 Accept: application/json
 ###

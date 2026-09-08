@@ -5,7 +5,7 @@ Este projeto tem como objetivo executar processos relacionados ao cadastro de jo
 ## Estrutura do Projeto
 
 - **Catalog.Api**: Aplicação ASP.NET Core WebAPI MVC responsável pelo CRUD de jogos e por iniciar o fluxo de compra. 
-- **Catalog.Worker**: Aplicação Console que consome mensagens da fila payments-queue e inclui jogo no catálogo do usuário após aprovação do pagamento.
+- **Catalog.Worker**: Aplicação Console que consome mensagens da fila `payments-queue` e inclui jogo no catálogo do usuário após aprovação do pagamento.
 
 ### Acesso ao Banco de dados MongoDB
 - Porta: 27017

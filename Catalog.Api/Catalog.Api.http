@@ -16,7 +16,7 @@ Content-Type: application/json
 ###
 
 ### 2. Cadastrar um novo jogo
-POST {{Catalog.Api_HostAddress }}/game/
+POST {{Kong_HostAddress}}/game/
 Authorization: Bearer {{login.response.body.$.token}}
 Content-Type: application/json
 Accept: application/json
@@ -39,7 +39,7 @@ Accept: application/json
 
 {
   "userId": 1,
-  "gameId": "6a976cda75125ed4546e6295",
+  "gameId": "6aa005e5fc2e39db7fcf4e97",
   "userEmail": "admin@fiapcloud.com.br",
   "price": 19.90
 }

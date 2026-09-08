@@ -23,7 +23,7 @@ spec:
               value: "Production"
               
             - name: AWS_ENDPOINT
-              value: "http://localstack:4566"
+              value: "http://host.docker.internal:4566"
 
             - name: REDIS_HOST
               valueFrom:

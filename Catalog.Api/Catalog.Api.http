@@ -1,11 +1,9 @@
-@Users.API_HostAddress = http://localhost:5000
-@Catalog.Api_HostAddress = http://localhost:5025
 @Kong_HostAddress = http://localhost:8000
 
 ### Principais operações da API de catálogo de jogos
 ### 1. Autenticar e obter token
 # @name login
-POST {{Kong_HostAddress}}/api/users/auth
+POST {{Kong_HostAddress}}/user/auth
 Content-Type: application/json
 
 {

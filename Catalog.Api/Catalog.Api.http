@@ -37,7 +37,7 @@ Accept: application/json
 
 {
   "userId": 1,
-  "gameId": "6aa005e5fc2e39db7fcf4e97",
+  "gameId": "6aa1f120ba223ae8fbdad74c",
   "userEmail": "admin@fiapcloud.com.br",
   "price": 19.90
 }
@@ -59,19 +59,20 @@ Accept: application/json
 ###
 
 ### Obter um jogo específico
-GET {{Kong_HostAddress}}/game/6a975e621931668d8fc8fd57
+GET {{Kong_HostAddress}}/game/6aa1f120ba223ae8fbdad74c
 Authorization: Bearer {{login.response.body.$.token}}
 Accept: application/json
 ###
 
 ### Atualizar um jogo existente
-PUT {{Kong_HostAddress}}/game/6a89cfa4ae0c1c1eaec0839b
+PUT {{Kong_HostAddress}}/game/6aa1f120ba223ae8fbdad74c
 Authorization: Bearer {{login.response.body.$.token}}
 Content-Type: application/json
 Accept: application/json
 
 {
   "name": "Resident Evil X",
+  "genre": "Action",
   "description": "A new Resident Evil Series game",
   "publisher": "Capcom",
   "releaseDate": "2026-02-27T00:00:00Z",

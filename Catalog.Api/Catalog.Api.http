@@ -36,15 +36,15 @@ Content-Type: application/json
 Accept: application/json
 
 {
-  "userId": 1,
-  "gameId": "6aa1f120ba223ae8fbdad74c",
-  "userEmail": "admin@fiapcloud.com.br",
-  "price": 19.90
+  "userId": 2,
+  "gameId": "6abef96a76762ea31aede496",
+  "userEmail": "usuario.teste@fiap.com",
+  "price": 49.99
 }
 ###
 
 ### 4. Consultar jogos no catalogo do usuário
-GET {{Kong_HostAddress}}/catalog/1
+GET {{Kong_HostAddress}}/catalog/2
 Authorization: Bearer {{login.response.body.$.token}}
 Accept: application/json
 

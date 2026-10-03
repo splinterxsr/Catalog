@@ -1,3 +1,7 @@
+using Amazon;
+using Amazon.Runtime;
+using Amazon.SecretsManager;
+using Amazon.SecretsManager.Model;
 using Catalog.Api.Domain.Repositories;
 using Catalog.Api.Domain.Services;
 using Catalog.Api.Extensions;
@@ -5,6 +9,7 @@ using Catalog.Api.Infrastructure.Cache;
 using Catalog.Api.Infrastructure.Repositories;
 using Catalog.Api.Infrastructure.Services;
 using Catalog.Api.Profiles;
+using Fcg.Contracts;
 using MassTransit;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.HttpOverrides;
@@ -22,9 +27,32 @@ builder.Services.AddPolicies();
 builder.Services.AddAuthorization();
 builder.Services.AddSingleton<Mapper>();
 
+var awsAccessKeyId = Environment.GetEnvironmentVariable("AWS_ACCESS_KEY_ID") ?? string.Empty;
+var awsSecretAccessKey = Environment.GetEnvironmentVariable("AWS_SECRET_ACCESS_KEY") ?? string.Empty;
+
+var credentials = new BasicAWSCredentials(awsAccessKeyId, awsSecretAccessKey);
+using var client = new AmazonSecretsManagerClient(RegionEndpoint.USEast1);
+
+var request = new GetSecretValueRequest
+{
+    SecretId = "fcg-secrets"
+};
+
+var response = await client.GetSecretValueAsync(request);
+
+if (!string.IsNullOrEmpty(response.SecretString))
+{
+    // Caso o segredo seja um JSON contendo chave:valor
+    var secretData = JsonSerializer.Deserialize<Dictionary<string, string>>(response.SecretString);
+    if (secretData != null)
+    {
+        builder.Configuration.AddInMemoryCollection(secretData!);
+    }
+}
+
 #region MongoDb
 
-builder.Services.AddMongoDb();
+builder.Services.AddMongoDb(builder.Configuration);
 
 #endregion
 
@@ -32,31 +60,30 @@ builder.Services.AddMongoDb();
 
 builder.Services.AddSingleton<IConnectionMultiplexer>(sp =>
 {
-    var conn = Environment.GetEnvironmentVariable("REDIS_HOST") ?? "localhost:6379";
+    var conn = Environment.GetEnvironmentVariable("REDIS_HOST") ?? string.Empty;
     return ConnectionMultiplexer.Connect($"{conn},abortConnect=false");
 });
 
 #endregion
 
-#region MassTransit (AWS SQS / LocalStack)
+#region MassTransit (Azure Service Bus)
+
 builder.Services.AddMassTransit(x =>
 {
-    x.UsingAmazonSqs((context, cfg) =>
+    var topicName = Environment.GetEnvironmentVariable("ORDERS_TOPIC") ?? string.Empty;
+
+    x.UsingAzureServiceBus((context, cfg) =>
     {
-        cfg.Host("us-east-1", h =>
-        {
-            h.AccessKey("test");
-            h.SecretKey("test");
+        var connectionString = builder.Configuration["ServiceBusConnectionString"] ?? string.Empty;
 
-            var awsEndpoint = Environment.GetEnvironmentVariable("AWS_ENDPOINT") ?? "http://localhost:4566";
+        cfg.Host(connectionString);
 
-            h.Config(new Amazon.SQS.AmazonSQSConfig { ServiceURL = awsEndpoint });
-            h.Config(new Amazon.SimpleNotificationService.AmazonSimpleNotificationServiceConfig { ServiceURL = awsEndpoint });
-        });
+        cfg.Message<OrderPlacedEvent>(e => e.SetEntityName(topicName));
 
-        cfg.ConfigureEndpoints(context);
+        cfg.UseMessageRetry(r => r.Interval(3, TimeSpan.FromSeconds(5)));
     });
 });
+
 #endregion
 
 #region Dependency Injection

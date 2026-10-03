@@ -3,4 +3,4 @@ kind: ConfigMap
 metadata:
   name: catalog-worker-config
 data:
-  PAYMENT_QUEUE_NAME: "payments-1-queue"
+  PAYMENTS_SUBSCRIPTION: "catalog-sub"

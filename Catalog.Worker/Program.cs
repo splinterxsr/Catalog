@@ -1,29 +1,49 @@
-﻿using Catalog.Worker.Domain.Repositories;
+﻿using Amazon;
+using Amazon.Runtime;
+using Amazon.SecretsManager;
+using Amazon.SecretsManager.Model;
+using Catalog.Worker.Domain.Repositories;
 using Catalog.Worker.Infrastructure.Handlers;
 using Catalog.Worker.Infrastructure.Repositories;
+using Fcg.Contracts;
 using MassTransit;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using MongoDB.Driver;
 using StackExchange.Redis;
+using System.Text.Json;
 
 var builder = Host.CreateApplicationBuilder(args);
+
+var awsAccessKeyId = Environment.GetEnvironmentVariable("AWS_ACCESS_KEY_ID") ?? string.Empty;
+var awsSecretAccessKey = Environment.GetEnvironmentVariable("AWS_SECRET_ACCESS_KEY") ?? string.Empty;
+
+var credentials = new BasicAWSCredentials(awsAccessKeyId, awsSecretAccessKey);
+using var client = new AmazonSecretsManagerClient(RegionEndpoint.USEast1);
+
+var request = new GetSecretValueRequest
+{
+    SecretId = "fcg-secrets"
+};
+
+var response = await client.GetSecretValueAsync(request);
+
+if (!string.IsNullOrEmpty(response.SecretString))
+{
+    var secretData = JsonSerializer.Deserialize<Dictionary<string, string>>(response.SecretString);
+    if (secretData != null)
+    {
+        builder.Configuration.AddInMemoryCollection(secretData!);
+    }
+}
 
 #region MongoDB
 builder.Services.AddSingleton<IMongoClient>(sp =>
 {
-    var user = Environment.GetEnvironmentVariable("MONGO_INITDB_ROOT_USERNAME") ?? "root";
-    var pass = Environment.GetEnvironmentVariable("MONGO_INITDB_ROOT_PASSWORD") ?? "r00tp@ss";
-    var host = Environment.GetEnvironmentVariable("MONGODB_HOST") ?? "127.0.0.1:27017";
+    var connectionString = builder.Configuration["DocumentDbConnectionString"] ?? string.Empty;
 
-    var credential = MongoCredential.CreateCredential(
-                    databaseName: "admin",
-                    username: user,
-                    password: pass
-                );
-
-    var settings = MongoClientSettings.FromConnectionString($"mongodb://{host}");
-    settings.Credential = credential;
+    var settings = MongoClientSettings.FromConnectionString(connectionString);
     settings.ServerSelectionTimeout = TimeSpan.FromSeconds(90);
 
     return new MongoClient(settings);
@@ -31,7 +51,7 @@ builder.Services.AddSingleton<IMongoClient>(sp =>
 
 builder.Services.AddSingleton<IMongoDatabase>(sp =>
 {
-    var database = Environment.GetEnvironmentVariable("MONGODB_DB") ?? "fcg";
+    var database = Environment.GetEnvironmentVariable("MONGODB_DB") ?? throw new InvalidOperationException("Variável 'MONGODB_DB' não encontrada.");
 
     var client = sp.GetRequiredService<IMongoClient>();
 
@@ -43,7 +63,7 @@ builder.Services.AddSingleton<IMongoDatabase>(sp =>
 
 builder.Services.AddSingleton<IConnectionMultiplexer>(sp =>
 {
-    var conn = Environment.GetEnvironmentVariable("REDIS_HOST") ?? "localhost:6379";
+    var conn = Environment.GetEnvironmentVariable("REDIS_HOST") ?? string.Empty;
     return ConnectionMultiplexer.Connect(conn);
 });
 
@@ -52,32 +72,32 @@ builder.Services.AddScoped<IDatabase>(sp =>
 
 #endregion
 
-#region MassTransit (AWS SQS / LocalStack)
+#region MassTransit (Azure Service Bus)
+
 builder.Services.AddMassTransit(x =>
 {
+    var topicName = Environment.GetEnvironmentVariable("PAYMENTS_TOPIC") ?? string.Empty;
+    var subName = Environment.GetEnvironmentVariable("PAYMENTS_SUBSCRIPTION") ?? string.Empty;
+
     x.AddConsumer<PaymentConsumer>();
 
-    x.UsingAmazonSqs((context, cfg) =>
+    x.UsingAzureServiceBus((context, cfg) =>
     {
-        cfg.Host("us-east-1", h =>
-        {
-            h.AccessKey("test");
-            h.SecretKey("test");
+        var connectionString = builder.Configuration["ServiceBusConnectionString"] ?? string.Empty;
 
-            var awsEndpoint = Environment.GetEnvironmentVariable("AWS_ENDPOINT") ?? "http://localhost:4566";
+        cfg.Host(connectionString);
 
-            h.Config(new Amazon.SQS.AmazonSQSConfig { ServiceURL = awsEndpoint });
-            h.Config(new Amazon.SimpleNotificationService.AmazonSimpleNotificationServiceConfig { ServiceURL = awsEndpoint });
-        });
+        cfg.Message<PaymentProcessedEvent>(e => e.SetEntityName(topicName));
 
-        var paymentQueue = Environment.GetEnvironmentVariable("PAYMENT_QUEUE_NAME") ?? "payments-1-queue";
-
-        cfg.ReceiveEndpoint(paymentQueue, e =>
+        cfg.SubscriptionEndpoint<PaymentProcessedEvent>(subName, e =>
         {
             e.ConfigureConsumer<PaymentConsumer>(context);
         });
+
+        cfg.UseMessageRetry(r => r.Interval(3, TimeSpan.FromSeconds(5)));
     });
 });
+
 #endregion
 
 #region DI

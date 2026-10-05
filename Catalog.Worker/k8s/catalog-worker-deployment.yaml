@@ -18,7 +18,7 @@ spec:
         - name: acr-secret
       containers:
         - name: catalog-worker
-          image: fiapcloudgames.azurecr.io/catalog-worker:v1
+          image: fcgpostech.azurecr.io/catalog-worker:v1
           imagePullPolicy: Always
           env:
             - name: ASPNETCORE_ENVIRONMENT
@@ -29,31 +29,48 @@ spec:
                 configMapKeyRef:
                   name: app-config
                   key: REDIS_HOST
+
             - name: PAYMENTS_TOPIC
               valueFrom:
                 configMapKeyRef:
                   name: app-config
                   key: PAYMENTS_TOPIC
+
             - name: PAYMENTS_SUBSCRIPTION
               valueFrom:
                 configMapKeyRef:
                   name: catalog-worker-config
                   key: PAYMENTS_SUBSCRIPTION
+
             - name: MONGODB_DB
               valueFrom:
                 secretKeyRef:
                   name: app-secrets
                   key: MONGODB_DB
-            - name: AWS_ACCESS_KEY_ID
+
+            - name: KeyVaultUri
+              valueFrom:
+                configMapKeyRef:
+                  name: app-config
+                  key: KeyVaultUri
+
+            - name: AZURE_TENANT_ID
               valueFrom:
                 secretKeyRef:
                   name: app-secrets
-                  key: AWS_ACCESS_KEY_ID
-            - name: AWS_SECRET_ACCESS_KEY
+                  key: AZURE_TENANT_ID
+
+            - name: AZURE_CLIENT_ID
               valueFrom:
                 secretKeyRef:
                   name: app-secrets
-                  key: AWS_SECRET_ACCESS_KEY
+                  key: AZURE_CLIENT_ID
+
+            - name: AZURE_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: app-secrets
+                  key: AZURE_CLIENT_SECRET
           resources:
             requests:
               cpu: "100m"

@@ -68,24 +68,29 @@ jobs:
           docker build -f Catalog.Worker/Dockerfile -t $REGISTRY_URL/catalog-worker:${{ github.sha }} -t $REGISTRY_URL/catalog-worker:latest .
           docker push $REGISTRY_URL/catalog-worker:${{ github.sha }}
           docker push $REGISTRY_URL/catalog-worker:latest
-          
+    
+      # =========================================================================
+      # ETAPAS DO AKS COMENTADAS PARA EVITAR CUSTOS ENQUANTO O CLUSTER ESTÁ DESLIGADO
+      # =========================================================================   
       # 5. Configurar contexto do AKS
-      - name: Set AKS Context
-        uses: azure/aks-set-context@v3
-        with:
-          resource-group: ${{ secrets.AZURE_RESOURCE_GROUP }}
-          cluster-name: ${{ secrets.AKS_CLUSTER_NAME }}
+      # - name: Set AKS Context
+      #  uses: azure/aks-set-context@v3
+      #  with:
+      #    resource-group: ${{ secrets.AZURE_RESOURCE_GROUP }}
+      #    cluster-name: ${{ secrets.AKS_CLUSTER_NAME }}
 
       # 6. Deploy da API no Kubernetes
-      - name: Deploy Catalog.API to K8s
-        run: |
-          REGISTRY_URL=fcgpostech.azurecr.io
-          kubectl set image deployment/catalog-api catalog-api=$REGISTRY_URL/catalog-api:${{ github.sha }}
-          kubectl rollout status deployment/catalog-api --timeout=120s
+      # - name: Deploy Catalog.API to K8s
+      #  run: |
+      #    REGISTRY_URL=fcgpostech.azurecr.io
+      #    kubectl set image deployment/catalog-api catalog-api=$REGISTRY_URL/catalog-api:${{ github.sha }}
+      #    kubectl rollout status deployment/catalog-api --timeout=120s
 
       # 7. Deploy do Worker no Kubernetes
-      - name: Deploy Catalog.Worker to K8s
-        run: |
-          REGISTRY_URL=fcgpostech.azurecr.io
-          kubectl set image deployment/catalog-worker catalog-worker=$REGISTRY_URL/catalog-worker:${{ github.sha }}
-          kubectl rollout status deployment/catalog-worker --timeout=120s
+      # - name: Deploy Catalog.Worker to K8s
+      #  run: |
+      #    REGISTRY_URL=fcgpostech.azurecr.io
+      #    kubectl set image deployment/catalog-worker catalog-worker=$REGISTRY_URL/catalog-worker:${{ github.sha }}
+      #    kubectl rollout status deployment/catalog-worker --timeout=120s
+
+          

@@ -54,10 +54,10 @@ jobs:
           az acr login --name fcgpostech
 
       # 3. Build & Push da Imagem da Catalog.API
-      - name: Build and Push Catalog.API Docker Image
+      - name: Build and Push Catalog.Api Docker Image
         run: |
           REGISTRY_URL=fcgpostech.azurecr.io
-          docker build -f Catalog.API/Dockerfile -t $REGISTRY_URL/catalog-api:${{ github.sha }} -t $REGISTRY_URL/catalog-api:latest .
+          docker build -f Catalog.Api/Dockerfile -t $REGISTRY_URL/catalog-api:${{ github.sha }} -t $REGISTRY_URL/catalog-api:latest .
           docker push $REGISTRY_URL/catalog-api:${{ github.sha }}
           docker push $REGISTRY_URL/catalog-api:latest
 

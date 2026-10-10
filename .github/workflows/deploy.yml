@@ -44,7 +44,7 @@ jobs:
 
       # 1. Autenticação na Azure
       - name: Azure Login
-        uses: azure/login@v2
+        uses: azure/login@v2.2.0
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 

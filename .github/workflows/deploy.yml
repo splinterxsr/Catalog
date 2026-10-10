@@ -53,22 +53,22 @@ jobs:
         run: |
           az acr login --name fcgpostech
 
-      # 3. Build & Push da Imagem da API
+      # 3. Build & Push da Imagem da Catalog.API
       - name: Build and Push Catalog.API Docker Image
         run: |
           REGISTRY_URL=fcgpostech.azurecr.io
-          docker build -f src/Catalog.API/Dockerfile -t $REGISTRY_URL/catalog-api:${{ github.sha }} -t $REGISTRY_URL/catalog-api:latest .
+          docker build -f Catalog.API/Dockerfile -t $REGISTRY_URL/catalog-api:${{ github.sha }} -t $REGISTRY_URL/catalog-api:latest .
           docker push $REGISTRY_URL/catalog-api:${{ github.sha }}
           docker push $REGISTRY_URL/catalog-api:latest
 
-      # 4. Build & Push da Imagem do Worker
+      # 4. Build & Push da Imagem do Catalog.Worker
       - name: Build and Push Catalog.Worker Docker Image
         run: |
           REGISTRY_URL=fcgpostech.azurecr.io
-          docker build -f src/Catalog.Worker/Dockerfile -t $REGISTRY_URL/catalog-worker:${{ github.sha }} -t $REGISTRY_URL/catalog-worker:latest .
+          docker build -f Catalog.Worker/Dockerfile -t $REGISTRY_URL/catalog-worker:${{ github.sha }} -t $REGISTRY_URL/catalog-worker:latest .
           docker push $REGISTRY_URL/catalog-worker:${{ github.sha }}
           docker push $REGISTRY_URL/catalog-worker:latest
-
+          
       # 5. Configurar contexto do AKS
       - name: Set AKS Context
         uses: azure/aks-set-context@v3

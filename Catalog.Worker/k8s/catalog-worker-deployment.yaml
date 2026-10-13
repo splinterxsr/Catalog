@@ -18,7 +18,7 @@ spec:
         - name: acr-secret
       containers:
         - name: catalog-worker
-          image: fcgpostech.azurecr.io/catalog-worker:v1
+          image: fiapcg.azurecr.io/catalog-worker:v1
           imagePullPolicy: Always
           env:
             - name: ASPNETCORE_ENVIRONMENT
@@ -73,8 +73,8 @@ spec:
                   key: AZURE_CLIENT_SECRET
           resources:
             requests:
+              cpu: "50m"
+              memory: "64Mi"
+            limits:
               cpu: "100m"
               memory: "256Mi"
-            limits:
-              cpu: "500m"
-              memory: "512Mi"

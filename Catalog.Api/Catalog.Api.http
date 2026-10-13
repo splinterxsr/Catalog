@@ -20,12 +20,12 @@ Content-Type: application/json
 Accept: application/json
 
 {
-  "name": "Onimusha",
-  "description": "Onimusha is a hack and slash video game developed by Capcom.",
-  "publisher": "Capcom",
-  "genres": [{"name": "RPG"}],
-  "releaseDate": "2026-09-04",
-  "price": 69.99
+  "name": "GTA VI",
+  "description": "A new rockstar studio game",
+  "publisher": "Rockstar Games",
+  "genres": [{"name": "ACTION"}],
+  "releaseDate": "2026-11-19",
+  "price": 79.99
 }
 ###
 
@@ -36,15 +36,15 @@ Content-Type: application/json
 Accept: application/json
 
 {
-  "userId": 2,
-  "gameId": "6abef96a76762ea31aede496",
+  "userId": 1,
+  "gameId": "6ac43cd7c434256484799e1d",
   "userEmail": "usuario.teste@fiap.com",
   "price": 49.99
 }
 ###
 
 ### 4. Consultar jogos no catalogo do usuário
-GET {{Kong_HostAddress}}/catalog/2
+GET {{Kong_HostAddress}}/catalog/1
 Authorization: Bearer {{login.response.body.$.token}}
 Accept: application/json
 

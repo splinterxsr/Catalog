@@ -51,12 +51,12 @@ jobs:
       # 2. Login no ACR
       - name: Login to Azure Container Registry (ACR)
         run: |
-          az acr login --name fcgpostech
+          az acr login --name fiapcg
 
       # 3. Build & Push da Imagem da Catalog.API
       - name: Build and Push Catalog.Api Docker Image
         run: |
-          REGISTRY_URL=fcgpostech.azurecr.io
+          REGISTRY_URL=fiapcg.azurecr.io
           docker build -f Catalog.Api/Dockerfile -t $REGISTRY_URL/catalog-api:${{ github.sha }} -t $REGISTRY_URL/catalog-api:latest .
           docker push $REGISTRY_URL/catalog-api:${{ github.sha }}
           docker push $REGISTRY_URL/catalog-api:latest
@@ -64,7 +64,7 @@ jobs:
       # 4. Build & Push da Imagem do Catalog.Worker
       - name: Build and Push Catalog.Worker Docker Image
         run: |
-          REGISTRY_URL=fcgpostech.azurecr.io
+          REGISTRY_URL=fiapcg.azurecr.io
           docker build -f Catalog.Worker/Dockerfile -t $REGISTRY_URL/catalog-worker:${{ github.sha }} -t $REGISTRY_URL/catalog-worker:latest .
           docker push $REGISTRY_URL/catalog-worker:${{ github.sha }}
           docker push $REGISTRY_URL/catalog-worker:latest

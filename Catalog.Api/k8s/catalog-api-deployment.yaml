@@ -18,7 +18,7 @@ spec:
         - name: acr-secret
       containers:
         - name: catalog-api
-          image: fcgpostech.azurecr.io/catalog-api:v1
+          image: fiapcg.azurecr.io/catalog-api:latest
           imagePullPolicy: Always
           ports:
             - containerPort: 8080

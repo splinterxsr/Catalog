@@ -1,10 +1,11 @@
 ﻿using Catalog.Api.Domain.Entities;
 using Catalog.Api.Domain.Repositories;
 using Catalog.Api.Domain.Services;
+using Catalog.Api.Models;
 
 namespace Catalog.Api.Infrastructure.Services
 {
-    public class GameService(IGameRepository repository) : IGameService
+    public class GameService(IGameRepository repository, IGameSearchService gameSearchService) : IGameService
     {
         public async Task AddAsync(Game game, CancellationToken cancellationToken)
         {
@@ -16,6 +17,19 @@ namespace Catalog.Api.Infrastructure.Services
             }
 
             await repository.CreateAsync(game, cancellationToken);
+
+            var searchModel = new GameSearchModel
+            {
+                Id = game.Id,
+                Name = game.Name,
+                Description = game.Description,
+                Publisher = game.Publisher,
+                ReleaseDate = game.ReleaseDate,
+                Price = game.Price,
+                Status = game.Status
+            };
+
+            await gameSearchService.IndexOrUpdateGameAsync(searchModel);
         }
 
         public async Task UpdateAsync(string id, string name, string description, string publisher, DateTime releaseDate, decimal price, string status, CancellationToken cancellationToken)
@@ -37,6 +51,19 @@ namespace Catalog.Api.Infrastructure.Services
             existingGame.Update(name, description, publisher, releaseDate, price, status);
 
             await repository.UpdateAsync(existingGame, cancellationToken);
+
+            var searchModel = new GameSearchModel
+            {
+                Id = existingGame.Id,
+                Name = existingGame.Name,
+                Description = existingGame.Description,
+                Publisher = existingGame.Publisher,
+                ReleaseDate = existingGame.ReleaseDate,
+                Price = existingGame.Price,
+                Status = existingGame.Status
+            };
+
+            await gameSearchService.IndexOrUpdateGameAsync(searchModel);
         }
 
         public async Task DeleteAsync(string id, CancellationToken cancellationToken)
@@ -49,6 +76,7 @@ namespace Catalog.Api.Infrastructure.Services
             }
 
             await repository.DeleteAsync(id, cancellationToken);
+            await gameSearchService.DeleteGameAsync(id);
         }
 
         /// <summary>

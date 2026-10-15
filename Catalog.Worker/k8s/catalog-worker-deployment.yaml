@@ -42,6 +42,12 @@ spec:
                   name: catalog-worker-config
                   key: PAYMENTS_SUBSCRIPTION
 
+            - name: USER_CATALOG_PREFIX
+              valueFrom:
+                secretKeyRef:
+                  name: app-secrets
+                  key: USER_CATALOG_PREFIX
+
             - name: MONGODB_DB
               valueFrom:
                 secretKeyRef:

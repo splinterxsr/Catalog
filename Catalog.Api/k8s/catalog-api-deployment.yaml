@@ -85,6 +85,11 @@ spec:
                 secretKeyRef:
                   name: app-secrets
                   key: AZURE_CLIENT_SECRET
+            - name: ELASTICSEARCH_URL
+            valueFrom:
+              configMapKeyRef:
+                name: catalog-api-config
+                key: ELASTICSEARCH_URL
           resources:
             requests:
               cpu: "50m"

@@ -31,6 +31,12 @@ spec:
                 configMapKeyRef:
                   name: app-config
                   key: REDIS_HOST
+            
+            - name: USER_SERVICE_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: app-config
+                  key: USER_SERVICE_URL
 
             - name: PAYMENTS_TOPIC
               valueFrom:

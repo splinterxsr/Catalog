@@ -25,7 +25,7 @@ namespace Catalog.Api.Controllers
         [Route("{userId}")]
         public async Task<IActionResult> Get(int userId, CancellationToken cancellationToken)
         {
-            var catalogs = await _catalogRepository.GetByIdAsync(userId, cancellationToken);
+            var catalogs = await _catalogService.GetByIdAsync(userId, cancellationToken);
 
             return Ok(catalogs);
         }

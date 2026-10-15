@@ -1,4 +1,4 @@
-@Kong_HostAddress = http://localhost:8000
+@Kong_HostAddress = http://20.88.187.29:8000
 
 ### Principais operações da API de catálogo de jogos
 ### 1. Autenticar e obter token
@@ -7,8 +7,8 @@ POST {{Kong_HostAddress}}/user/auth
 Content-Type: application/json
 
 {
-  "email": "admin@fiapcloud.com.br",
-  "password": "admin"
+  "email": "andre.pedroso@fiap.com",
+  "password": "Teste@1234!"
 }
 
 ###
@@ -44,7 +44,7 @@ Accept: application/json
 ###
 
 ### 4. Consultar jogos no catalogo do usuário
-GET {{Kong_HostAddress}}/catalog/1
+GET {{Kong_HostAddress}}/catalog/2
 Authorization: Bearer {{login.response.body.$.token}}
 Accept: application/json
 

@@ -3,6 +3,7 @@ using Catalog.Api.Domain.Repositories;
 using Catalog.Api.Domain.Services;
 using Catalog.Api.Extensions;
 using Catalog.Api.Infrastructure.Cache;
+using Catalog.Api.Infrastructure.Clients;
 using Catalog.Api.Infrastructure.Repositories;
 using Catalog.Api.Infrastructure.Services;
 using Catalog.Api.Profiles;
@@ -23,6 +24,8 @@ builder.Services.AddJwtSecurity();
 builder.Services.AddPolicies();
 builder.Services.AddAuthorization();
 builder.Services.AddSingleton<Mapper>();
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddHttpClient<UserClientService>();
 
 var vaultUriStr = Environment.GetEnvironmentVariable("KeyVaultUri") ?? string.Empty;
 var vaultUri = new Uri(vaultUriStr);
@@ -69,6 +72,7 @@ builder.Services.AddMassTransit(x =>
 
 builder.Services.AddSingleton<IRedisCacheService, RedisCacheService>();
 
+builder.Services.AddTransient<IUserClientService, UserClientService>();
 builder.Services.AddTransient<ICatalogService, CatalogService>();
 builder.Services.AddTransient<IGameService, GameService>();
 

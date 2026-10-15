@@ -1,14 +1,35 @@
 ﻿using Catalog.Api.Domain.Entities;
 using Catalog.Api.Domain.Repositories;
 using Catalog.Api.Domain.Services;
+using Catalog.Api.Infrastructure.Clients;
 using Fcg.Contracts;
 using MassTransit;
 using MongoDB.Bson;
+using System.Security.Claims;
 
 namespace Catalog.Api.Infrastructure.Services
 {
-    public class CatalogService(IPublishEndpoint publishEndpoint, ICatalogRepository userCatalogRepository, IGameRepository gameRepository, IOrderRepository orderRepository, ILogger<CatalogService> logger) : ICatalogService
+    public class CatalogService(
+        IHttpContextAccessor httpContextAccessor,
+        IUserClientService userClientService,
+        IPublishEndpoint publishEndpoint, 
+        ICatalogRepository userCatalogRepository,
+        IGameRepository gameRepository, 
+        IOrderRepository orderRepository, 
+        ILogger<CatalogService> logger) : ICatalogService
     {
+        public async Task<IEnumerable<UserGame>> GetByIdAsync(int userId, CancellationToken cancellationToken = default)
+        {
+            var email = httpContextAccessor.HttpContext?.User?
+                .FindFirstValue(ClaimTypes.Email) ?? string.Empty;
+
+            var user = await userClientService.GetUserByEmailAsync(email, cancellationToken);
+
+            return user is null
+                ? throw new InvalidOperationException("Authenticated user not found.")
+                : user.Email == email? await userCatalogRepository.GetByIdAsync(userId, cancellationToken) : throw new UnauthorizedAccessException("User email does not match the authenticated user.");
+        }
+
         public async Task AddToCatalogAsync(int userId, string userEmail, string gameId, decimal price, CancellationToken cancellationToken = default)
         {
             _ = await gameRepository.GetByIdAsync(gameId, cancellationToken) ?? throw new ArgumentException($"Game {gameId} not found.");

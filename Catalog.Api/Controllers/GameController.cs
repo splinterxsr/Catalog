@@ -10,7 +10,6 @@ namespace Catalog.Api.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    [Authorize(Policy = nameof(Policy.Admin))]
     public class GameController : ControllerBase
     {
         private readonly IGameService _service;
@@ -25,6 +24,7 @@ namespace Catalog.Api.Controllers
         }
 
         [HttpGet]
+        [Authorize(Policy = nameof(Policy.All))]
         public async Task<IActionResult> Get(CancellationToken cancellationToken)
         {
             var games = await _repository.GetAsync(cancellationToken);
@@ -34,6 +34,7 @@ namespace Catalog.Api.Controllers
 
         [HttpGet]
         [Route("{id}")]
+        [Authorize(Policy = nameof(Policy.All))]
         public async Task<IActionResult> Get(string id, CancellationToken cancellationToken)
         {
             var game = await _repository.GetByIdAsync(id, cancellationToken);
@@ -44,6 +45,7 @@ namespace Catalog.Api.Controllers
         }
 
         [HttpPost]
+        [Authorize(Policy = nameof(Policy.Admin))]
         public async Task<IActionResult> Post([FromBody] GameRequest request, CancellationToken cancellationToken)
         {
             if (ModelState.IsValid is false)
@@ -68,6 +70,7 @@ namespace Catalog.Api.Controllers
 
         [HttpPut]
         [Route("{id}")]
+        [Authorize(Policy = nameof(Policy.Admin))]
         public async Task<IActionResult> Put(string id, [FromBody] GameUpdate update, CancellationToken cancellationToken)
         {
             if (ModelState.IsValid is false)
@@ -89,6 +92,7 @@ namespace Catalog.Api.Controllers
 
         [HttpDelete]
         [Route("{id}")]
+        [Authorize(Policy = nameof(Policy.Admin))]
         public async Task<IActionResult> Delete(string id, CancellationToken cancellationToken)
         {
             try

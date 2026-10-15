@@ -1,6 +1,7 @@
 ﻿using Catalog.Api.Domain.Enums;
 using Catalog.Api.Domain.Repositories;
 using Catalog.Api.Domain.Services;
+using Catalog.Api.Infrastructure.Services;
 using Catalog.Api.Models;
 using Catalog.Api.Profiles;
 using Microsoft.AspNetCore.Authorization;
@@ -13,12 +14,14 @@ namespace Catalog.Api.Controllers
     public class GameController : ControllerBase
     {
         private readonly IGameService _service;
+        private readonly IGameSearchService _gameSearchService;
         private readonly IGameRepository _repository;
         private readonly Mapper _mapper;
 
-        public GameController(IGameService service, IGameRepository repository, Mapper mapper)
+        public GameController(IGameService service, IGameSearchService gameSearchService, IGameRepository repository, Mapper mapper)
         {
             _service = service;
+            _gameSearchService = gameSearchService;
             _repository = repository;
             _mapper = mapper;
         }
@@ -105,6 +108,24 @@ namespace Catalog.Api.Controllers
             }
 
             return Ok();
+        }
+
+        [HttpGet]
+        [Route("search")]
+        [AllowAnonymous]
+        public async Task<IActionResult> Search([FromQuery] string q, CancellationToken cancellationToken)
+        {
+            if (string.IsNullOrWhiteSpace(q)) return BadRequest("O parâmetro de busca não pode ser vazio.");
+
+            try
+            {
+                var results = await _gameSearchService.SearchAsync(q, cancellationToken);
+                return Ok(results);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
     }
 }

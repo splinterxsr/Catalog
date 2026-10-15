@@ -7,6 +7,7 @@ using Catalog.Api.Infrastructure.Clients;
 using Catalog.Api.Infrastructure.Repositories;
 using Catalog.Api.Infrastructure.Services;
 using Catalog.Api.Profiles;
+using Elastic.Clients.Elasticsearch;
 using Fcg.Contracts;
 using MassTransit;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
@@ -48,6 +49,15 @@ builder.Services.AddSingleton<IConnectionMultiplexer>(sp =>
 
 #endregion
 
+#region ElasticSearch
+var elasticUrl = Environment.GetEnvironmentVariable("ELASTICSEARCH_URL") ?? "http://localhost:9200";
+var settings = new ElasticsearchClientSettings(new Uri(elasticUrl))
+    .DefaultIndex("games");
+
+var elasticClient = new ElasticsearchClient(settings);
+builder.Services.AddSingleton(elasticClient);
+#endregion
+
 #region MassTransit (Azure Service Bus)
 
 builder.Services.AddMassTransit(x =>
@@ -75,6 +85,7 @@ builder.Services.AddSingleton<IRedisCacheService, RedisCacheService>();
 builder.Services.AddTransient<IUserClientService, UserClientService>();
 builder.Services.AddTransient<ICatalogService, CatalogService>();
 builder.Services.AddTransient<IGameService, GameService>();
+builder.Services.AddScoped<IGameSearchService, GameSearchService>();
 
 builder.Services.AddTransient<GameRepository>();
 builder.Services.AddTransient<IGameRepository>(sp =>

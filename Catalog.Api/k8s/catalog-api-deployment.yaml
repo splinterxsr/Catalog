@@ -38,6 +38,12 @@ spec:
                   name: app-config
                   key: USER_SERVICE_URL
 
+            - name: ELASTICSEARCH_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: app-config
+                  key: ELASTICSEARCH_URL
+
             - name: PAYMENTS_TOPIC
               valueFrom:
                 configMapKeyRef:
@@ -67,7 +73,7 @@ spec:
                 configMapKeyRef:
                   name: app-config
                   key: JWT_ISSUER
-            
+          
             - name: KeyVaultUri
               valueFrom:
                 configMapKeyRef:

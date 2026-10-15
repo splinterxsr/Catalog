@@ -112,7 +112,7 @@ namespace Catalog.Api.Controllers
 
         [HttpGet]
         [Route("search")]
-        [AllowAnonymous]
+        [Authorize(Policy = nameof(Policy.All))]
         public async Task<IActionResult> Search([FromQuery] string q, CancellationToken cancellationToken)
         {
             if (string.IsNullOrWhiteSpace(q)) return BadRequest("O parâmetro de busca não pode ser vazio.");

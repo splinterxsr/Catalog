@@ -20,12 +20,12 @@ Content-Type: application/json
 Accept: application/json
 
 {
-  "name": "GTA VI",
-  "description": "A new rockstar studio game",
-  "publisher": "Rockstar Games",
+  "name": "Resident Evil 5000",
   "genres": [{"name": "ACTION"}],
-  "releaseDate": "2026-11-19",
-  "price": 79.99
+  "description": "A new Resident Evil Series game",
+  "publisher": "Capcom",
+  "releaseDate": "2026-02-27T00:00:00Z",
+  "price": 70
 }
 ###
 
@@ -83,6 +83,12 @@ Accept: application/json
 
 ### Remover um jogo
 DELETE {{Kong_HostAddress}}/game/6a84f2a42821cd3184ebc821
+Authorization: Bearer {{login.response.body.$.token}}
+Accept: application/json
+###
+
+### Buscar jogos no Elasticsearch
+GET {{Kong_HostAddress}}/game/search?q=Resident
 Authorization: Bearer {{login.response.body.$.token}}
 Accept: application/json
 ###

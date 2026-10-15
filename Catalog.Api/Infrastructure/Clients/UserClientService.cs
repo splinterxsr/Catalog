@@ -38,7 +38,7 @@ public class UserClientService : IUserClientService
         var requisicao = new
         {
             email = "admin@fiapcloud.com.br",
-            senha = "admin"
+            password = "admin"
         };
 
         using var response = await _httpClient.PostAsJsonAsync(

@@ -28,8 +28,8 @@ builder.Services.AddSingleton<Mapper>();
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddHttpClient<UserClientService>();
 
-var vaultUriStr = Environment.GetEnvironmentVariable("KeyVaultUri") ?? string.Empty;
-var vaultUri = new Uri(vaultUriStr);
+var vaultUriStr = Environment.GetEnvironmentVariable("KeyVaultUri") ?? builder.Configuration["KeyVaultUri"];
+var vaultUri = new Uri(vaultUriStr!);
 
 builder.Configuration.AddAzureKeyVault(vaultUri, new DefaultAzureCredential());
 
@@ -43,7 +43,7 @@ builder.Services.AddMongoDb(builder.Configuration);
 
 builder.Services.AddSingleton<IConnectionMultiplexer>(sp =>
 {
-    var conn = Environment.GetEnvironmentVariable("REDIS_HOST") ?? string.Empty;
+    var conn = Environment.GetEnvironmentVariable("REDIS_HOST") ?? "http://localhost:6379";
     return ConnectionMultiplexer.Connect($"{conn},abortConnect=false");
 });
 
@@ -62,7 +62,7 @@ builder.Services.AddSingleton(elasticClient);
 
 builder.Services.AddMassTransit(x =>
 {
-    var topicName = Environment.GetEnvironmentVariable("ORDERS_TOPIC") ?? string.Empty;
+    var topicName = Environment.GetEnvironmentVariable("ORDERS_TOPIC") ?? "orders-topic";
 
     x.UsingAzureServiceBus((context, cfg) =>
     {

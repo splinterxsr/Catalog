@@ -18,18 +18,26 @@ namespace Catalog.Api.Infrastructure.Services
 
             await repository.CreateAsync(game, cancellationToken);
 
-            var searchModel = new GameSearchModel
+            try
             {
-                Id = game.Id,
-                Name = game.Name,
-                Description = game.Description,
-                Publisher = game.Publisher,
-                ReleaseDate = game.ReleaseDate,
-                Price = game.Price,
-                Status = game.Status
-            };
+                var searchModel = new GameSearchModel
+                {
+                    Id = game.Id,
+                    Name = game.Name,
+                    Description = game.Description,
+                    Publisher = game.Publisher,
+                    ReleaseDate = game.ReleaseDate,
+                    Price = game.Price,
+                    Status = game.Status
+                };
 
-            await gameSearchService.IndexOrUpdateGameAsync(searchModel);
+                await gameSearchService.IndexOrUpdateGameAsync(searchModel);
+            }
+            catch (Exception ex)
+            {
+                await repository.DeleteAsync(game.Id!, cancellationToken);
+                throw new InvalidOperationException($"Erro ao indexar jogo no Elasticsearch. O cadastro foi cancelado: {ex.Message}", ex);
+            }
         }
 
         public async Task UpdateAsync(string id, string name, string description, string publisher, DateTime releaseDate, decimal price, string status, CancellationToken cancellationToken)
@@ -48,22 +56,32 @@ namespace Catalog.Api.Infrastructure.Services
                 throw new InvalidOperationException($"A game with the name '{name}' already exists.");
             }
 
+            var originalGame = existingGame.Clone();
+
             existingGame.Update(name, description, publisher, releaseDate, price, status);
 
             await repository.UpdateAsync(existingGame, cancellationToken);
 
-            var searchModel = new GameSearchModel
+            try
             {
-                Id = existingGame.Id,
-                Name = existingGame.Name,
-                Description = existingGame.Description,
-                Publisher = existingGame.Publisher,
-                ReleaseDate = existingGame.ReleaseDate,
-                Price = existingGame.Price,
-                Status = existingGame.Status
-            };
+                var searchModel = new GameSearchModel
+                {
+                    Id = existingGame.Id,
+                    Name = existingGame.Name,
+                    Description = existingGame.Description,
+                    Publisher = existingGame.Publisher,
+                    ReleaseDate = existingGame.ReleaseDate,
+                    Price = existingGame.Price,
+                    Status = existingGame.Status
+                };
 
-            await gameSearchService.IndexOrUpdateGameAsync(searchModel);
+                await gameSearchService.IndexOrUpdateGameAsync(searchModel);
+            }
+            catch (Exception ex)
+            {
+                await repository.UpdateAsync(originalGame, cancellationToken);
+                throw new InvalidOperationException($"Erro ao atualizar jogo no Elasticsearch. As alterações foram revertidas: {ex.Message}", ex);
+            }
         }
 
         public async Task DeleteAsync(string id, CancellationToken cancellationToken)
@@ -76,7 +94,16 @@ namespace Catalog.Api.Infrastructure.Services
             }
 
             await repository.DeleteAsync(id, cancellationToken);
-            await gameSearchService.DeleteGameAsync(id);
+
+            try
+            {
+                await gameSearchService.DeleteGameAsync(id);
+            }
+            catch (Exception ex)
+            {
+                await repository.CreateAsync(existingGame, cancellationToken);
+                throw new InvalidOperationException($"Erro ao remover jogo do Elasticsearch. A exclusão foi revertida: {ex.Message}", ex);
+            }
         }
 
         /// <summary>

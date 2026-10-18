@@ -38,6 +38,25 @@ namespace Catalog.Api.Domain.Entities
             Price = price;
             Status = status;
         }
+
+        // Construtor auxiliar que aceita o ID (usado para o clone/rollback)
+        public Game(string id, string name, string description, string publisher, DateTime releaseDate, IList<Genre> genres, decimal price, string status)
+        {
+            Id = id;
+            Name = name;
+            Description = description;
+            Publisher = publisher;
+            ReleaseDate = releaseDate;
+            Genres = genres;
+            Price = price;
+            Status = status;
+        }
+
+        // Método de clonagem para preservar o estado original
+        public Game Clone()
+        {
+            return new Game(Id, Name, Description, Publisher, ReleaseDate, Genres, Price, Status);
+        }
     }
 
     public class Genre

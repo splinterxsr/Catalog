@@ -73,6 +73,12 @@ spec:
                 configMapKeyRef:
                   name: app-config
                   key: JWT_ISSUER
+
+            - name: USER_CATALOG_PREFIX
+              valueFrom:
+                secretKeyRef:
+                  name: app-secrets
+                  key: USER_CATALOG_PREFIX
           
             - name: KeyVaultUri
               valueFrom:

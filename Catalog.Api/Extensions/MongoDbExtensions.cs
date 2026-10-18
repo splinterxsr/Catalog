@@ -18,7 +18,7 @@ namespace Catalog.Api.Extensions
 
             services.AddSingleton<IMongoDatabase>(sp =>
             {
-                var database = Environment.GetEnvironmentVariable("MONGODB_DB") ?? string.Empty;
+                var database = Environment.GetEnvironmentVariable("MONGODB_DB") ?? "fcg";
 
                 var client = sp.GetRequiredService<IMongoClient>();
 

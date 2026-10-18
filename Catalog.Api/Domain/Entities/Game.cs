@@ -1,5 +1,6 @@
 ﻿using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
+using System.Text.Json.Serialization;
 
 namespace Catalog.Api.Domain.Entities
 {
@@ -16,9 +17,12 @@ namespace Catalog.Api.Domain.Entities
         public decimal Price { get; private set; }
         public string Status { get; set; } = string.Empty;
 
+        protected Game() { } // Parameterless constructor for MongoDB deserialization
+
         /// <summary>
         /// Constructor for Mapperly mapping. It is required to have a constructor that accepts all properties of the entity for Mapperly to create instances of the entity when mapping from DTOs. This constructor should be public to allow Mapperly to access it when creating instances of the entity during the mapping process, ensuring that all necessary properties are set correctly.
         /// </summary>
+        [JsonConstructor]
         public Game(string name, string description, string publisher, DateTime releaseDate, IList<Genre> genres, decimal price)
         {
             Name = name;

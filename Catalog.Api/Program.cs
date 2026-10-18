@@ -43,7 +43,7 @@ builder.Services.AddMongoDb(builder.Configuration);
 
 builder.Services.AddSingleton<IConnectionMultiplexer>(sp =>
 {
-    var conn = Environment.GetEnvironmentVariable("REDIS_HOST") ?? "http://localhost:6379";
+    var conn = Environment.GetEnvironmentVariable("REDIS_HOST") ?? "localhost:6379";
     return ConnectionMultiplexer.Connect($"{conn},abortConnect=false");
 });
 

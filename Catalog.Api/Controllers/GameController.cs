@@ -1,7 +1,6 @@
 ﻿using Catalog.Api.Domain.Enums;
 using Catalog.Api.Domain.Repositories;
 using Catalog.Api.Domain.Services;
-using Catalog.Api.Infrastructure.Services;
 using Catalog.Api.Models;
 using Catalog.Api.Profiles;
 using Microsoft.AspNetCore.Authorization;

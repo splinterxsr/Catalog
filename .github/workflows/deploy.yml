@@ -11,8 +11,14 @@ on:
 
 jobs:
   build-and-test:
-    name: Build & Unit Tests (.NET 10)
+    name: Build & Tests (.NET 10)
     runs-on: ubuntu-latest
+    services:
+      docker:
+        image: docker:19.03.12
+        options: --privileged --vfs-storage-driver vfs
+        ports:
+          - 2375:2375
 
     steps:
       - name: Checkout repository
@@ -29,8 +35,10 @@ jobs:
       - name: Build Solution
         run: dotnet build --no-restore --configuration Release
 
-      - name: Run Unit Tests
+      - name: Run Tests
         run: dotnet test --no-build --configuration Release --verbosity normal
+        env:
+          DOCKER_HOST: tcp://localhost:2375
 
   deploy:
     name: Build Docker Images & Deploy to AKS
@@ -42,18 +50,15 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v5
 
-      # 1. Autenticação na Azure
       - name: Azure Login
         uses: azure/login@v2.2.0
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-      # 2. Login no ACR
       - name: Login to Azure Container Registry (ACR)
         run: |
           az acr login --name fiapcg
 
-      # 3. Build & Push da Imagem da Catalog.API
       - name: Build and Push Catalog.Api Docker Image
         run: |
           REGISTRY_URL=fiapcg.azurecr.io
@@ -61,22 +66,19 @@ jobs:
           docker push $REGISTRY_URL/catalog-api:${{ github.sha }}
           docker push $REGISTRY_URL/catalog-api:latest
 
-      # 4. Build & Push da Imagem do Catalog.Worker
       - name: Build and Push Catalog.Worker Docker Image
         run: |
           REGISTRY_URL=fiapcg.azurecr.io
           docker build -f Catalog.Worker/Dockerfile -t $REGISTRY_URL/catalog-worker:${{ github.sha }} -t $REGISTRY_URL/catalog-worker:latest .
           docker push $REGISTRY_URL/catalog-worker:${{ github.sha }}
-          docker push $REGISTRY_URL/catalog-worker:latest   
-    
-      # 5. Configurar contexto do AKS
+          docker push $REGISTRY_URL/catalog-worker:latest    
+
       - name: Set AKS Context
         uses: azure/aks-set-context@v3
         with:
           resource-group: ${{ secrets.AZURE_RESOURCE_GROUP }}
           cluster-name: ${{ secrets.AKS_CLUSTER_NAME }}
 
-      # 6. Deploy da API no Kubernetes
       - name: Deploy Catalog.API to K8s
         run: |
           REGISTRY_URL=fiapcg.azurecr.io
@@ -84,7 +86,6 @@ jobs:
           kubectl apply --validate=false -f Catalog.Api/k8s/
           kubectl rollout status deployment/catalog-api --timeout=120s || true
 
-      # 7. Deploy do Worker no Kubernetes
       - name: Deploy Catalog.Worker to K8s
         run: |
           REGISTRY_URL=fiapcg.azurecr.io

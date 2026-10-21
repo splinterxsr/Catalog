@@ -31,6 +31,10 @@ namespace Catalog.Api.Infrastructure.Services
 
         public async Task<IEnumerable<GameSearchModel>> SearchAsync(string query, CancellationToken cancellationToken)
         {
+            // Verifica se o índice já existe no Elasticsearch antes de consultar
+            var indexExistsResponse = await _elasticClient.Indices.ExistsAsync(IndexName, cancellationToken);
+            if (!indexExistsResponse.Exists) return [];
+
             // Realiza uma busca textual tolerante a erros (Fuzzy Search) nos campos Name, Description e Publisher
             var searchResponse = await _elasticClient.SearchAsync<GameSearchModel>(s => s
                 .Indices(IndexName)
